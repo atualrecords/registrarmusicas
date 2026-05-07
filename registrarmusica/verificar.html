@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Certificado</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body{
+      background:#050505;
+    }
+
+    .glass{
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen px-6 py-16">
+
+  <div class="max-w-4xl mx-auto">
+
+    <div class="text-center">
+
+      <h1 class="text-5xl font-bold">
+        Verificar Certificado
+      </h1>
+
+      <p class="mt-4 text-gray-400 text-lg">
+        Consulte a autenticidade de um registro pelo protocolo.
+      </p>
+
+    </div>
+
+    <div class="glass rounded-[40px] p-10 mt-12">
+
+      <label class="block mb-3 text-gray-300">
+        Protocolo
+      </label>
+
+      <input
+        id="protocolo"
+        type="text"
+        placeholder="Ex: RM-1778182123147"
+        class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"
+      >
+
+      <button
+        onclick="verificarRegistro()"
+        class="mt-6 w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg"
+      >
+        Verificar
+      </button>
+
+      <div
+        id="resultado"
+        class="mt-10 hidden glass rounded-3xl p-8"
+      ></div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    const supabaseUrl =
+      'https://bdtswwyctsesszfyicoz.supabase.co'
+
+    const supabaseKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdHN3d3ljdHNlc3N6ZnlpY296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNTg4NDksImV4cCI6MjA5MzczNDg0OX0.MDB0cZsOq4EhsoJDrkistbB9Xy12DS_oxpjqDpiE-BA'
+
+    const supabaseClient =
+      supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
+
+    async function verificarRegistro(protocoloManual = null){
+
+      const protocolo =
+        protocoloManual ||
+        document.getElementById('protocolo').value.trim()
+
+      const resultado =
+        document.getElementById('resultado')
+
+      if(!protocolo){
+
+        alert('Digite um protocolo')
+
+        return
+      }
+
+      document.getElementById('protocolo').value =
+        protocolo
+
+      const { data, error } =
+        await supabaseClient
+          .from('registros')
+          .select('*')
+          .eq('protocolo', protocolo)
+          .single()
+
+      if(error || !data){
+
+        resultado.classList.remove('hidden')
+
+        resultado.innerHTML = `
+          <h2 class="text-2xl font-bold text-red-400">
+            Registro não encontrado
+          </h2>
+
+          <p class="mt-4 text-gray-400">
+            Verifique se o protocolo foi digitado corretamente.
+          </p>
+        `
+
+        return
+      }
+
+      resultado.classList.remove('hidden')
+
+      resultado.innerHTML = `
+
+        <div class="flex items-center gap-3">
+
+          <div class="w-4 h-4 rounded-full bg-green-400"></div>
+
+          <h2 class="text-3xl font-bold text-green-400">
+            Certificado válido
+          </h2>
+
+        </div>
+
+        <div class="mt-8 space-y-4 text-gray-300">
+
+          <p>
+            <strong>Protocolo:</strong>
+            ${data.protocolo}
+          </p>
+
+          <p>
+            <strong>Autor:</strong>
+            ${data.nome}
+          </p>
+
+          <p>
+            <strong>Nome artístico:</strong>
+            ${data.nome_artistico || '-'}
+          </p>
+
+          <p>
+            <strong>Título da obra:</strong>
+            ${data.titulo}
+          </p>
+
+          <p>
+            <strong>Tipo:</strong>
+            ${data.tipo}
+          </p>
+
+          <p>
+            <strong>Status:</strong>
+            ${data.status}
+          </p>
+
+          <p>
+            <strong>Data do registro:</strong>
+            ${new Date(data.criado_em).toLocaleString('pt-BR')}
+          </p>
+
+          <div class="pt-6 border-t border-white/10">
+
+            <p class="font-semibold mb-2">
+              Hash SHA-256
+            </p>
+
+            <p class="break-all text-sm text-green-300">
+              ${data.hash_sha256}
+            </p>
+
+          </div>
+
+        </div>
+      `
+    }
+
+    const params =
+      new URLSearchParams(window.location.search)
+
+    const protocoloURL =
+      params.get('protocolo')
+
+    if(protocoloURL){
+
+      verificarRegistro(protocoloURL)
+
+    }
+
+  </script>
+
+</body>
+</html>
