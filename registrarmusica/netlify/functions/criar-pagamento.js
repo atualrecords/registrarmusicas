@@ -1,9 +1,12 @@
 exports.handler = async function(event) {
   try {
+
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
-        body: JSON.stringify({ erro: 'Método não permitido' })
+        body: JSON.stringify({
+          erro: 'Método não permitido'
+        })
       }
     }
 
@@ -11,7 +14,6 @@ exports.handler = async function(event) {
 
     const payload = {
       reference_id: dados.protocolo,
-      customer_modifiable: true,
 
       customer: {
         name: dados.nome,
@@ -28,32 +30,45 @@ exports.handler = async function(event) {
       ],
 
       payment_methods: [
-        { type: 'PIX' },
-        { type: 'credit_card' },
-        { type: 'BOLETO' }
+        {
+          type: 'PIX'
+        },
+        {
+          type: 'CREDIT_CARD'
+        },
+        {
+          type: 'BOLETO'
+        }
       ],
 
       redirect_url:
         `https://registrodemusica.netlify.app/verificar.html?protocolo=${dados.protocolo}`
     }
 
-    const response = await fetch('https://api.pagseguro.com/checkouts', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
+    // SANDBOX
+    const response = await fetch(
+      'https://sandbox.api.pagseguro.com/checkouts',
+      {
+        method: 'POST',
+
+        headers: {
+          Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+
+        body: JSON.stringify(payload)
+      }
+    )
 
     const texto = await response.text()
 
-    let resposta
+    let resposta = {}
+
     try {
       resposta = JSON.parse(texto)
     } catch {
-      resposta = texto
+      resposta = { raw: texto }
     }
 
     if (!response.ok) {
@@ -69,17 +84,17 @@ exports.handler = async function(event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        pagamento: resposta
-      })
+      body: JSON.stringify(resposta)
     }
 
   } catch (error) {
+
     return {
       statusCode: 500,
       body: JSON.stringify({
         erro: error.message
       })
     }
+
   }
 }
