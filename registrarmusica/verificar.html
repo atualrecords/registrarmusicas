@@ -6,6 +6,7 @@
   <title>Verificar Certificado</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     body{ background:#050505; }
@@ -61,6 +62,39 @@
 
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
+    let registroAtual = null
+
+    async function baixarCertificado(){
+      const { jsPDF } = window.jspdf
+      const doc = new jsPDF()
+
+      const data = registroAtual
+
+      doc.setFontSize(20)
+      doc.text('Certificado de Registro Autoral', 105, 25, { align: 'center' })
+
+      doc.setFontSize(12)
+      doc.text('Prova digital de anterioridade autoral', 105, 35, { align: 'center' })
+
+      doc.setFontSize(11)
+      doc.text(`Protocolo: ${data.protocolo}`, 20, 60)
+      doc.text(`Autor: ${data.nome}`, 20, 75)
+      doc.text(`Nome artístico: ${data.nome_artistico || '-'}`, 20, 90)
+      doc.text(`Título da obra: ${data.titulo}`, 20, 105)
+      doc.text(`Tipo: ${data.tipo}`, 20, 120)
+      doc.text(`Data do registro: ${new Date(data.criado_em).toLocaleString('pt-BR')}`, 20, 135)
+
+      doc.text('Hash SHA-256:', 20, 155)
+      doc.setFontSize(9)
+      doc.text(doc.splitTextToSize(data.hash_sha256, 170), 20, 165)
+
+      doc.setFontSize(10)
+      doc.text('Este certificado foi liberado após confirmação de pagamento.', 20, 210)
+      doc.text(`Validação pública: ${window.location.origin}/verificar.html?protocolo=${data.protocolo}`, 20, 225)
+
+      doc.save(`certificado-${data.protocolo}.pdf`)
+    }
+
     async function verificarRegistro(protocoloManual = null){
 
       const protocolo =
@@ -85,22 +119,19 @@
       if(error || !data){
         resultado.classList.remove('hidden')
         resultado.innerHTML = `
-          <h2 class="text-2xl font-bold text-red-400">
-            Registro não encontrado
-          </h2>
-          <p class="mt-4 text-gray-400">
-            Verifique se o protocolo foi digitado corretamente.
-          </p>
+          <h2 class="text-2xl font-bold text-red-400">Registro não encontrado</h2>
+          <p class="mt-4 text-gray-400">Verifique se o protocolo foi digitado corretamente.</p>
         `
         return
       }
+
+      registroAtual = data
 
       const respostaPagamento = await fetch(
         '/.netlify/functions/verificar-pagamento?protocolo=' + protocolo
       )
 
       const pagamento = await respostaPagamento.json()
-
       const statusPagamento = pagamento.status || 'PENDING'
 
       const pagamentoTexto =
@@ -113,14 +144,28 @@
           ? 'text-green-400'
           : 'text-yellow-400'
 
+      const botaoCertificado =
+        statusPagamento === 'PAID'
+          ? `
+            <button
+              onclick="baixarCertificado()"
+              class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl"
+            >
+              Baixar Certificado PDF
+            </button>
+          `
+          : `
+            <p class="mt-8 text-yellow-400 font-semibold">
+              O certificado será liberado após a confirmação do pagamento.
+            </p>
+          `
+
       resultado.classList.remove('hidden')
 
       resultado.innerHTML = `
         <div class="flex items-center gap-3">
           <div class="w-4 h-4 rounded-full bg-green-400"></div>
-          <h2 class="text-3xl font-bold text-green-400">
-            Registro encontrado
-          </h2>
+          <h2 class="text-3xl font-bold text-green-400">Registro encontrado</h2>
         </div>
 
         <div class="mt-8 space-y-4 text-gray-300">
@@ -139,10 +184,10 @@
 
           <div class="pt-6 border-t border-white/10">
             <p class="font-semibold mb-2">Hash SHA-256</p>
-            <p class="break-all text-sm text-green-300">
-              ${data.hash_sha256}
-            </p>
+            <p class="break-all text-sm text-green-300">${data.hash_sha256}</p>
           </div>
+
+          ${botaoCertificado}
         </div>
       `
     }
