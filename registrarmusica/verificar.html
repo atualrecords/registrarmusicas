@@ -64,33 +64,166 @@
 
     let registroAtual = null
 
+    async function imagemParaBase64(url){
+      const response = await fetch(url)
+      const blob = await response.blob()
+
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      })
+    }
+
     async function baixarCertificado(){
       const { jsPDF } = window.jspdf
-      const doc = new jsPDF()
+
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      })
 
       const data = registroAtual
 
-      doc.setFontSize(20)
-      doc.text('Certificado de Registro Autoral', 105, 25, { align: 'center' })
+      const largura = 297
+      const altura = 210
 
-      doc.setFontSize(12)
-      doc.text('Prova digital de anterioridade autoral', 105, 35, { align: 'center' })
+      const dourado = [176, 132, 46]
+      const douradoClaro = [218, 180, 92]
+      const preto = [28, 24, 20]
+      const creme = [248, 243, 230]
+      const marrom = [92, 63, 28]
 
+      doc.setFillColor(creme[0], creme[1], creme[2])
+      doc.rect(0, 0, largura, altura, 'F')
+
+      doc.setDrawColor(dourado[0], dourado[1], dourado[2])
+      doc.setLineWidth(2)
+      doc.rect(10, 10, largura - 20, altura - 20)
+
+      doc.setLineWidth(0.5)
+      doc.rect(15, 15, largura - 30, altura - 30)
+
+      doc.setDrawColor(douradoClaro[0], douradoClaro[1], douradoClaro[2])
+      doc.setLineWidth(0.3)
+      doc.line(25, 34, 272, 34)
+      doc.line(25, 176, 272, 176)
+
+      try{
+        const logo = await imagemParaBase64('logo-registrar-agora.png')
+        doc.addImage(logo, 'PNG', 108, 18, 82, 38)
+      }catch(e){
+        doc.setTextColor(dourado[0], dourado[1], dourado[2])
+        doc.setFontSize(18)
+        doc.text('REGISTRAR AGORA', 148.5, 35, { align: 'center' })
+      }
+
+      doc.setTextColor(preto[0], preto[1], preto[2])
+      doc.setFont('times', 'bold')
+      doc.setFontSize(26)
+      doc.text('CERTIFICADO DE REGISTRO AUTORAL', 148.5, 68, { align: 'center' })
+
+      doc.setFont('times', 'normal')
       doc.setFontSize(11)
-      doc.text(`Protocolo: ${data.protocolo}`, 20, 60)
-      doc.text(`Autor: ${data.nome}`, 20, 75)
-      doc.text(`Nome artístico: ${data.nome_artistico || '-'}`, 20, 90)
-      doc.text(`Título da obra: ${data.titulo}`, 20, 105)
-      doc.text(`Tipo: ${data.tipo}`, 20, 120)
-      doc.text(`Data do registro: ${new Date(data.criado_em).toLocaleString('pt-BR')}`, 20, 135)
+      doc.setTextColor(marrom[0], marrom[1], marrom[2])
+      doc.text('Prova digital de anterioridade autoral com validação pública por protocolo, hash criptográfico e QR Code.', 148.5, 76, { align: 'center' })
 
-      doc.text('Hash SHA-256:', 20, 155)
-      doc.setFontSize(9)
-      doc.text(doc.splitTextToSize(data.hash_sha256, 170), 20, 165)
+      doc.setDrawColor(dourado[0], dourado[1], dourado[2])
+      doc.setLineWidth(0.4)
+      doc.line(55, 82, 242, 82)
 
+      doc.setFillColor(255, 252, 242)
+      doc.roundedRect(25, 92, 166, 65, 3, 3, 'F')
+      doc.setDrawColor(220, 190, 120)
+      doc.roundedRect(25, 92, 166, 65, 3, 3, 'S')
+
+      doc.setTextColor(preto[0], preto[1], preto[2])
+      doc.setFont('times', 'bold')
+      doc.setFontSize(11)
+
+      doc.text('PROTOCOLO:', 34, 104)
+      doc.text('AUTOR:', 34, 115)
+      doc.text('NOME ARTÍSTICO:', 34, 126)
+      doc.text('TÍTULO DA OBRA:', 34, 137)
+      doc.text('TIPO:', 34, 148)
+
+      doc.setFont('times', 'normal')
+      doc.text(data.protocolo, 78, 104)
+      doc.text(data.nome || '-', 78, 115)
+      doc.text(data.nome_artistico || '-', 78, 126)
+      doc.text(data.titulo || '-', 78, 137)
+      doc.text(data.tipo || '-', 78, 148)
+
+      doc.setFillColor(34, 120, 70)
+      doc.roundedRect(200, 92, 72, 17, 3, 3, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFont('helvetica', 'bold')
       doc.setFontSize(10)
-      doc.text('Este certificado foi liberado após confirmação de pagamento.', 20, 210)
-      doc.text(`Validação pública: ${window.location.origin}/verificar.html?protocolo=${data.protocolo}`, 20, 225)
+      doc.text('PAGAMENTO CONFIRMADO', 236, 103, { align: 'center' })
+
+      const linkValidacao =
+        `${window.location.origin}/verificar.html?protocolo=${data.protocolo}`
+
+      try{
+        const qrUrl =
+          'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' +
+          encodeURIComponent(linkValidacao)
+
+        const qrBase64 = await imagemParaBase64(qrUrl)
+
+        doc.setFillColor(255, 255, 255)
+        doc.roundedRect(211, 116, 50, 50, 2, 2, 'F')
+        doc.addImage(qrBase64, 'PNG', 215, 120, 42, 42)
+
+        doc.setTextColor(marrom[0], marrom[1], marrom[2])
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(7)
+        doc.text('Escaneie para validar', 236, 170, { align: 'center' })
+      }catch(e){
+        doc.setTextColor(marrom[0], marrom[1], marrom[2])
+        doc.setFontSize(8)
+        doc.text('QR Code indisponível', 236, 140, { align: 'center' })
+      }
+
+      doc.setTextColor(preto[0], preto[1], preto[2])
+      doc.setFont('times', 'bold')
+      doc.setFontSize(10)
+      doc.text('HASH SHA-256', 25, 172)
+
+      doc.setFont('courier', 'normal')
+      doc.setFontSize(7)
+      doc.setTextColor(70, 70, 70)
+      doc.text(doc.splitTextToSize(data.hash_sha256 || '-', 170), 25, 179)
+
+      doc.setTextColor(marrom[0], marrom[1], marrom[2])
+      doc.setFont('times', 'normal')
+      doc.setFontSize(9)
+
+      const textoLegal =
+        'Certificamos que a obra informada foi submetida à plataforma Registrar Agora, gerando protocolo único, data de registro e hash criptográfico para comprovação digital de anterioridade.'
+
+      doc.text(doc.splitTextToSize(textoLegal, 185), 25, 192)
+
+      doc.setFont('times', 'bold')
+      doc.setFontSize(10)
+      doc.setTextColor(dourado[0], dourado[1], dourado[2])
+      doc.text('REGISTRAR AGORA', 236, 186, { align: 'center' })
+
+      doc.setFont('times', 'normal')
+      doc.setFontSize(8)
+      doc.setTextColor(marrom[0], marrom[1], marrom[2])
+      doc.text('Registro Autoral Digital', 236, 192, { align: 'center' })
+
+      doc.setFontSize(7)
+      doc.text('Operado por Atual Records Produções • MEI', 236, 198, { align: 'center' })
+      doc.text('CNPJ: 33.705.089/0001-40', 236, 202, { align: 'center' })
+      doc.text('Responsável: Eval da Silva Arantes', 236, 206, { align: 'center' })
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(6.5)
+      doc.setTextColor(90, 90, 90)
+      doc.text(`Validação pública: ${linkValidacao}`, 148.5, 187, { align: 'center' })
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
