@@ -1,132 +1,176 @@
 exports.handler = async function(event) {
-
   try {
-
-    const protocolo =
-      event.queryStringParameters?.protocolo
+    const protocolo = event.queryStringParameters?.protocolo
 
     if(!protocolo){
-
       return {
-        statusCode:400,
-        body:JSON.stringify({
-          erro:'Protocolo não informado'
+        statusCode: 400,
+        body: JSON.stringify({
+          erro: 'Protocolo não informado',
+          status: 'PENDING'
         })
       }
     }
 
-    const supabaseResponse =
-      await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/registros?protocolo=eq.${encodeURIComponent(protocolo)}&select=*`,
-        {
-          headers:{
-            apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization:`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-          }
+    const supabaseResponse = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/registros?protocolo=eq.${encodeURIComponent(protocolo)}&select=*`,
+      {
+        headers: {
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
         }
-      )
+      }
+    )
 
-    const registros =
-      await supabaseResponse.json()
-
-    const registro =
-      registros?.[0]
+    const registros = await supabaseResponse.json()
+    const registro = registros?.[0]
 
     if(!registro){
-
       return {
-        statusCode:404,
-        body:JSON.stringify({
-          erro:'Registro não encontrado'
+        statusCode: 404,
+        body: JSON.stringify({
+          erro: 'Registro não encontrado',
+          status: 'PENDING'
         })
       }
     }
 
-    const pagbankId =
-      registro.pagbank_id
+    const pagbankId = registro.pagbank_id
 
     if(!pagbankId){
-
       return {
-        statusCode:200,
-        body:JSON.stringify({
-          status:'PENDING'
+        statusCode: 200,
+        body: JSON.stringify({
+          status: 'PENDING',
+          detalhe: 'Registro ainda não possui pagbank_id'
         })
       }
     }
 
-    const response =
-      await fetch(
-        `https://sandbox.api.pagseguro.com/checkouts/${pagbankId}`,
-        {
-          method:'GET',
-
-          headers:{
-            Authorization:`Bearer ${process.env.PAGBANK_TOKEN}`,
-            Accept:'application/json'
-          }
+    const checkoutResponse = await fetch(
+      `https://sandbox.api.pagseguro.com/checkouts/${pagbankId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
+          Accept: 'application/json'
         }
-      )
+      }
+    )
 
-    const texto =
-      await response.text()
+    const checkoutTexto = await checkoutResponse.text()
 
-    let resposta = {}
+    let checkout = {}
 
-    try{
-      resposta = JSON.parse(texto)
-    }catch{
-      resposta = { raw:texto }
+    try {
+      checkout = JSON.parse(checkoutTexto)
+    } catch {
+      checkout = { raw: checkoutTexto }
     }
 
-    if(!response.ok){
-
+    if(!checkoutResponse.ok){
       return {
-        statusCode:response.status,
-        body:JSON.stringify({
-          erro:'Erro ao consultar checkout',
-          detalhe:resposta,
-          status:'PENDING'
+        statusCode: checkoutResponse.status,
+        body: JSON.stringify({
+          erro: 'Erro ao consultar checkout',
+          detalhe: checkout,
+          status: 'PENDING'
         })
       }
     }
 
-    const charges =
-      resposta?.charges || []
+    const orderId = checkout?.orders?.[0]?.id
+
+    if(!orderId){
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          status: 'PENDING',
+          detalhe: checkout
+        })
+      }
+    }
+
+    const orderResponse = await fetch(
+      `https://sandbox.api.pagseguro.com/orders/${orderId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
+          Accept: 'application/json'
+        }
+      }
+    )
+
+    const orderTexto = await orderResponse.text()
+
+    let order = {}
+
+    try {
+      order = JSON.parse(orderTexto)
+    } catch {
+      order = { raw: orderTexto }
+    }
+
+    if(!orderResponse.ok){
+      return {
+        statusCode: orderResponse.status,
+        body: JSON.stringify({
+          erro: 'Erro ao consultar pedido',
+          checkout,
+          detalhe: order,
+          status: 'PENDING'
+        })
+      }
+    }
+
+    const charges = order?.charges || []
 
     let statusFinal = 'PENDING'
 
-    if(charges.length > 0){
+    const algumPagamentoAprovado = charges.some(charge =>
+      charge.status === 'PAID' ||
+      charge.status === 'AUTHORIZED'
+    )
 
-      const charge =
-        charges[0]
+    if(algumPagamentoAprovado){
+      statusFinal = 'PAID'
+    }
 
-      if(
-        charge.status === 'PAID' ||
-        charge.status === 'AUTHORIZED'
-      ){
-        statusFinal = 'PAID'
-      }
+    if(statusFinal === 'PAID'){
+      await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/registros?protocolo=eq.${encodeURIComponent(protocolo)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+          },
+          body: JSON.stringify({
+            status_pagamento: 'pago'
+          })
+        }
+      )
     }
 
     return {
-      statusCode:200,
-      body:JSON.stringify({
+      statusCode: 200,
+      body: JSON.stringify({
         status: statusFinal,
-        detalhe: resposta
+        checkout,
+        order
       })
     }
 
-  } catch(error){
-
+  } catch(error) {
     return {
-      statusCode:500,
-      body:JSON.stringify({
-        erro:error.message,
-        status:'PENDING'
+      statusCode: 500,
+      body: JSON.stringify({
+        erro: error.message,
+        status: 'PENDING'
       })
     }
-
   }
-
 }
