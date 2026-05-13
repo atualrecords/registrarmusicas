@@ -21,7 +21,6 @@
 <body class="text-white min-h-screen px-6 py-16">
 
   <div class="max-w-4xl mx-auto">
-
     <div class="text-center">
       <h1 class="text-5xl font-bold">Verificar Certificado</h1>
       <p class="mt-4 text-gray-400 text-lg">
@@ -30,27 +29,18 @@
     </div>
 
     <div class="glass rounded-[40px] p-10 mt-12">
-
       <label class="block mb-3 text-gray-300">Protocolo</label>
 
-      <input
-        id="protocolo"
-        type="text"
-        placeholder="Ex: RM-1778182123147"
-        class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"
-      >
+      <input id="protocolo" type="text" placeholder="Ex: RM-1778182123147"
+        class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
 
-      <button
-        onclick="verificarRegistro()"
-        class="mt-6 w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg"
-      >
+      <button onclick="verificarRegistro()"
+        class="mt-6 w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg">
         Verificar
       </button>
 
       <div id="resultado" class="mt-10 hidden glass rounded-3xl p-8"></div>
-
     </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -164,41 +154,16 @@
       doc.setFont('times','bold')
       doc.setFontSize(10)
       doc.setTextColor(preto[0],preto[1],preto[2])
-      doc.text(
-  'HASH SHA-256',
-  105,
-  210,
-  { align:'center' }
-)
+      doc.text('HASH SHA-256',105,210,{align:'center'})
 
-      doc.setFont('courier','normal')
       doc.setFont('courier','normal')
       doc.setFontSize(9)
       doc.setTextColor(70,70,70)
 
-const hashCentralizada =
-  doc.splitTextToSize(
-    data.hash_sha256 || '-',
-    150
-  )
+      const hashCentralizada =
+        doc.splitTextToSize(data.hash_sha256 || '-',150)
 
-doc.text(
- doc.setFont('courier','normal')
-doc.setFontSize(9)
-doc.setTextColor(70,70,70)
-
-const hashCentralizada =
-  doc.splitTextToSize(
-    data.hash_sha256 || '-',
-    150
-  )
-
-doc.text(
-  hashCentralizada,
-  105,
-  216,
-  { align:'center' }
-)
+      doc.text(hashCentralizada,105,218,{align:'center'})
 
       try{
         const qrUrl =
@@ -214,7 +179,7 @@ doc.text(
         doc.setFont('helvetica','normal')
         doc.setFontSize(7)
         doc.setTextColor(marrom[0],marrom[1],marrom[2])
-        doc.text('Escaneie para validar autenticidade',105,276,{align:'center'})
+        doc.text('Escaneie para validar autenticidade',105,269,{align:'center'})
       }catch(e){
         doc.setFontSize(8)
         doc.text('QR Code indisponível',105,250,{align:'center'})
@@ -223,47 +188,22 @@ doc.text(
       doc.setDrawColor(douradoClaro[0],douradoClaro[1],douradoClaro[2])
       doc.line(45,272,165,272)
 
-doc.setFont('times','bold')
-doc.setFontSize(9)
-doc.setTextColor(dourado[0],dourado[1],dourado[2])
+      doc.setFont('times','bold')
+      doc.setFontSize(9)
+      doc.setTextColor(dourado[0],dourado[1],dourado[2])
+      doc.text('REGISTRAR AGORA',105,278,{align:'center'})
 
-doc.text(
-  'REGISTRAR AGORA',
-  105,
-  278,
-  { align:'center' }
-)
-
-doc.setFont('times','normal')
-doc.setFontSize(7)
-doc.setTextColor(marrom[0],marrom[1],marrom[2])
-
-doc.text(
-  'Registro Autoral Digital',
-  105,
-  283,
-  { align:'center' }
-)
-
-doc.text(
-  'Operado por Atual Records Produções MEI',
-  105,
-  287,
-  { align:'center' }
-)
-
-doc.text(
-  'CNPJ: 33.705.089/0001-40',
-  105,
-  291,
-  { align:'center' }
-)
+      doc.setFont('times','normal')
+      doc.setFontSize(7)
+      doc.setTextColor(marrom[0],marrom[1],marrom[2])
+      doc.text('Registro Autoral Digital',105,283,{align:'center'})
+      doc.text('Operado por Atual Records Produções MEI',105,287,{align:'center'})
+      doc.text('CNPJ: 33.705.089/0001-40',105,291,{align:'center'})
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
 
     async function verificarRegistro(protocoloManual = null){
-
       const protocolo =
         protocoloManual ||
         document.getElementById('protocolo').value.trim()
@@ -314,10 +254,8 @@ doc.text(
       const botaoCertificado =
         statusPagamento === 'PAID'
           ? `
-            <button
-              onclick="baixarCertificado()"
-              class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl"
-            >
+            <button onclick="baixarCertificado()"
+              class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
               Baixar Certificado PDF
             </button>
           `
