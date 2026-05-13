@@ -178,9 +178,20 @@ const hashCentralizada =
   )
 
 doc.text(
+ doc.setFont('courier','normal')
+doc.setFontSize(9)
+doc.setTextColor(70,70,70)
+
+const hashCentralizada =
+  doc.splitTextToSize(
+    data.hash_sha256 || '-',
+    150
+  )
+
+doc.text(
   hashCentralizada,
   105,
-  218,
+  216,
   { align:'center' }
 )
 
