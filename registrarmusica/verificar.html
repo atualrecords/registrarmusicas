@@ -164,7 +164,12 @@
       doc.setFont('times','bold')
       doc.setFontSize(10)
       doc.setTextColor(preto[0],preto[1],preto[2])
-      doc.text('HASH SHA-256',25,210)
+      doc.text(
+  'HASH SHA-256',
+  105,
+  210,
+  { align:'center' }
+)
 
       doc.setFont('courier','normal')
       doc.setFont('courier','normal')
@@ -216,20 +221,43 @@ doc.text(
       }
 
       doc.setDrawColor(douradoClaro[0],douradoClaro[1],douradoClaro[2])
-      doc.line(45,279,165,279)
+      doc.line(45,272,165,272)
 
-      doc.setFont('times','bold')
-      doc.setFontSize(9)
-      doc.setTextColor(dourado[0],dourado[1],dourado[2])
-      doc.text('REGISTRAR AGORA',105,283,{align:'center'})
+doc.setFont('times','bold')
+doc.setFontSize(9)
+doc.setTextColor(dourado[0],dourado[1],dourado[2])
 
-      doc.setFont('times','normal')
-      doc.setFontSize(6.5)
-      doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text('Registro Autoral Digital',105,287,{align:'center'})
-      doc.text('Operado por Atual Records Produções MEI',105,291,{align:'center'})
-      doc.text('CNPJ: 33.705.089/0001-40',105,295,{align:'center'})
-      doc.text(`Validação pública: ${linkValidacao}`,105,295,{align:'center'})
+doc.text(
+  'REGISTRAR AGORA',
+  105,
+  278,
+  { align:'center' }
+)
+
+doc.setFont('times','normal')
+doc.setFontSize(7)
+doc.setTextColor(marrom[0],marrom[1],marrom[2])
+
+doc.text(
+  'Registro Autoral Digital',
+  105,
+  283,
+  { align:'center' }
+)
+
+doc.text(
+  'Operado por Atual Records Produções MEI',
+  105,
+  287,
+  { align:'center' }
+)
+
+doc.text(
+  'CNPJ: 33.705.089/0001-40',
+  105,
+  291,
+  { align:'center' }
+)
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
