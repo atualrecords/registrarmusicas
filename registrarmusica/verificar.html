@@ -167,9 +167,22 @@
       doc.text('HASH SHA-256',25,210)
 
       doc.setFont('courier','normal')
-      doc.setFontSize(8)
+      doc.setFont('courier','normal')
+      doc.setFontSize(9)
       doc.setTextColor(70,70,70)
-      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',160),25,218)
+
+const hashCentralizada =
+  doc.splitTextToSize(
+    data.hash_sha256 || '-',
+    150
+  )
+
+doc.text(
+  hashCentralizada,
+  105,
+  218,
+  { align:'center' }
+)
 
       try{
         const qrUrl =
@@ -179,8 +192,8 @@
         const qrBase64 = await imagemParaBase64(qrUrl)
 
         doc.setFillColor(255,255,255)
-        doc.roundedRect(86,233,38,38,2,2,'F')
-        doc.addImage(qrBase64,'PNG',90,237,30,30)
+        doc.roundedRect(88,232,34,34,2,2,'F')
+        doc.addImage(qrBase64,'PNG',92,236,26,26)
 
         doc.setFont('helvetica','normal')
         doc.setFontSize(7)
@@ -202,8 +215,9 @@
       doc.setFont('times','normal')
       doc.setFontSize(6.5)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text('Registro Autoral Digital • Operado por Atual Records Produções MEI',105,287,{align:'center'})
-      doc.text('CNPJ: 33.705.089/0001-40 • Responsável: Eval da Silva Arantes',105,291,{align:'center'})
+      doc.text('Registro Autoral Digital',105,287,{align:'center'})
+      doc.text('Operado por Atual Records Produções MEI',105,291,{align:'center'})
+      doc.text('CNPJ: 33.705.089/0001-40',105,295,{align:'center'})
       doc.text(`Validação pública: ${linkValidacao}`,105,295,{align:'center'})
 
       doc.save(`certificado-${data.protocolo}.pdf`)
