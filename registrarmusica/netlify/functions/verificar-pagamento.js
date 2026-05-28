@@ -48,7 +48,7 @@ exports.handler = async function(event) {
     }
 
     const checkoutResponse = await fetch(
-      `https://sandbox.api.pagseguro.com/checkouts/${pagbankId}`,
+      `https://api.pagseguro.com/checkouts/${pagbankId}`,
       {
         method: 'GET',
         headers: {
@@ -92,7 +92,7 @@ exports.handler = async function(event) {
     }
 
     const orderResponse = await fetch(
-      `https://sandbox.api.pagseguro.com/orders/${orderId}`,
+      `https://api.pagseguro.com/orders/${orderId}`,
       {
         method: 'GET',
         headers: {
@@ -129,8 +129,7 @@ exports.handler = async function(event) {
     let statusFinal = 'PENDING'
 
     const algumPagamentoAprovado = charges.some(charge =>
-      charge.status === 'PAID' ||
-      charge.status === 'AUTHORIZED'
+      charge.status === 'PAID'
     )
 
     if(algumPagamentoAprovado){
