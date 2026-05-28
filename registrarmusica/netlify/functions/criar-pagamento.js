@@ -39,18 +39,15 @@ exports.handler = async function(event) {
         `https://registrodemusica.netlify.app/verificar.html?protocolo=${dados.protocolo}`
     }
 
-    // PRODUÇÃO
     const response = await fetch(
       'https://api.pagseguro.com/checkouts',
       {
         method: 'POST',
-
         headers: {
           Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
           'Content-Type': 'application/json',
           Accept: 'application/json'
         },
-
         body: JSON.stringify(payload)
       }
     )
@@ -66,6 +63,9 @@ exports.handler = async function(event) {
     }
 
     if (!response.ok) {
+      console.log('STATUS PAGBANK:', response.status)
+      console.log('RESPOSTA PAGBANK:', texto)
+
       return {
         statusCode: response.status,
         body: JSON.stringify({
@@ -84,6 +84,8 @@ exports.handler = async function(event) {
     }
 
   } catch (error) {
+
+    console.log('ERRO INTERNO:', error.message)
 
     return {
       statusCode: 500,
