@@ -30,24 +30,18 @@ exports.handler = async function(event) {
       ],
 
       payment_methods: [
-        {
-          type: 'PIX'
-        },
-        {
-          type: 'CREDIT_CARD'
-        },
-        {
-          type: 'BOLETO'
-        }
+        { type: 'PIX' },
+        { type: 'CREDIT_CARD' },
+        { type: 'BOLETO' }
       ],
 
       redirect_url:
         `https://registrodemusica.netlify.app/verificar.html?protocolo=${dados.protocolo}`
     }
 
-    // SANDBOX
+    // PRODUÇÃO
     const response = await fetch(
-      'https://sandbox.api.pagseguro.com/checkouts',
+      'https://api.pagseguro.com/checkouts',
       {
         method: 'POST',
 
