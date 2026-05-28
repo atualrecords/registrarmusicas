@@ -8,7 +8,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    body{ background:#050505; }
+    body{
+      background:#050505;
+    }
+
     .glass{
       background:rgba(255,255,255,0.04);
       backdrop-filter:blur(12px);
@@ -22,27 +25,43 @@
   <div class="max-w-4xl mx-auto">
 
     <div class="text-center">
-      <h1 class="text-5xl font-bold">Registrar Obra</h1>
+      <h1 class="text-5xl font-bold">
+        Registrar Obra
+      </h1>
+
       <p class="mt-4 text-gray-400 text-lg">
         Envie sua obra. O certificado será liberado após o pagamento.
       </p>
+
       <p class="mt-3 text-green-400 font-bold text-xl">
         Valor do registro: R$ 37,50
       </p>
     </div>
 
-    <div class="glass rounded-[40px] p-10 mt-12">
+    <div id="formBox" class="glass rounded-[40px] p-10 mt-12">
 
       <form id="registroForm" class="space-y-8">
 
-        <input id="nome" type="text" required placeholder="Nome completo" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
-        <input id="cpf" type="text" required placeholder="CPF" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
-        <input id="email" type="email" required placeholder="E-mail" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
-        <input id="whatsapp" type="tel" required placeholder="WhatsApp com DDD" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
-        <input id="nome_artistico" type="text" placeholder="Nome artístico" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
-        <input id="titulo" type="text" required placeholder="Título da obra" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+        <input id="nome" type="text" required placeholder="Nome completo"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
 
-        <select id="tipo" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+        <input id="cpf" type="text" required placeholder="CPF"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <input id="email" type="email" required placeholder="E-mail"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <input id="whatsapp" type="tel" required placeholder="WhatsApp com DDD"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <input id="nome_artistico" type="text" placeholder="Nome artístico"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <input id="titulo" type="text" required placeholder="Título da obra"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <select id="tipo"
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
           <option>Música</option>
           <option>Letra</option>
           <option>Poesia</option>
@@ -50,42 +69,64 @@
           <option>Instrumental</option>
         </select>
 
-        <input id="arquivo" type="file" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+        <input id="arquivo" type="file" required
+          class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
 
         <div class="flex gap-3 items-start">
           <input id="declaracao" type="checkbox" required class="mt-1">
+
           <p class="text-gray-400 text-sm">
             Declaro ser responsável pelo conteúdo enviado e possuir os direitos necessários sobre a obra registrada.
           </p>
         </div>
 
-        <div id="status" class="hidden text-green-400 text-center font-semibold"></div>
+        <div id="status"
+          class="hidden text-green-400 text-center font-semibold"></div>
 
-        <button id="botao" type="submit" class="w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg">
+        <button id="botao" type="submit"
+          class="w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg">
           Criar registro e seguir para pagamento
         </button>
 
       </form>
 
-      <div id="resultado" class="hidden text-center glass rounded-3xl p-8"></div>
-
     </div>
+
+    <div id="resultado"
+      class="hidden text-center glass rounded-3xl p-8 mt-12"></div>
 
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const supabaseUrl = 'https://bdtswwyctsesszfyicoz.supabase.co'
 
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdHN3d3ljdHNlc3N6ZnlpY296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNTg4NDksImV4cCI6MjA5MzczNDg0OX0.MDB0cZsOq4EhsoJDrkistbB9Xy12DS_oxpjqDpiE-BA'
+    const supabaseUrl =
+      'https://bdtswwyctsesszfyicoz.supabase.co'
 
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
+    const supabaseKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdHN3d3ljdHNlc3N6ZnlpY296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNTg4NDksImV4cCI6MjA5MzczNDg0OX0.MDB0cZsOq4EhsoJDrkistbB9Xy12DS_oxpjqDpiE-BA'
 
-    const form = document.getElementById('registroForm')
-    const statusBox = document.getElementById('status')
-    const botao = document.getElementById('botao')
-    const resultado = document.getElementById('resultado')
+    const supabaseClient =
+      supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
+
+    const form =
+      document.getElementById('registroForm')
+
+    const formBox =
+      document.getElementById('formBox')
+
+    const statusBox =
+      document.getElementById('status')
+
+    const botao =
+      document.getElementById('botao')
+
+    const resultado =
+      document.getElementById('resultado')
 
     function status(msg){
       statusBox.classList.remove('hidden')
@@ -93,176 +134,310 @@
     }
 
     async function gerarHashSHA256(arquivo){
-      const buffer = await arquivo.arrayBuffer()
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
-      const hashArray = Array.from(new Uint8Array(hashBuffer))
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      const buffer =
+        await arquivo.arrayBuffer()
+
+      const hashBuffer =
+        await crypto.subtle.digest(
+          'SHA-256',
+          buffer
+        )
+
+      const hashArray =
+        Array.from(
+          new Uint8Array(hashBuffer)
+        )
+
+      return hashArray
+        .map(b =>
+          b.toString(16).padStart(2,'0')
+        )
+        .join('')
     }
 
     function encontrarLinkPagamento(pagamento){
-      if(pagamento?.links && Array.isArray(pagamento.links)){
-        const linkPay = pagamento.links.find(l =>
-          l.rel === 'PAY' || l.rel === 'payment' || l.rel === 'checkout' || l.media === 'text/html'
-        )
-        if(linkPay?.href) return linkPay.href
+
+      if(
+        pagamento?.links &&
+        Array.isArray(pagamento.links)
+      ){
+
+        const linkPay =
+          pagamento.links.find(l =>
+            l.rel === 'PAY' ||
+            l.rel === 'payment' ||
+            l.rel === 'checkout' ||
+            l.media === 'text/html'
+          )
+
+        if(linkPay?.href)
+          return linkPay.href
       }
 
-      if(pagamento?.payment_url) return pagamento.payment_url
-      if(pagamento?.checkout_url) return pagamento.checkout_url
-      if(pagamento?.url) return pagamento.url
+      if(pagamento?.payment_url)
+        return pagamento.payment_url
+
+      if(pagamento?.checkout_url)
+        return pagamento.checkout_url
+
+      if(pagamento?.url)
+        return pagamento.url
 
       return null
     }
 
-    form.addEventListener('submit', async function(e){
-      e.preventDefault()
+    form.addEventListener(
+      'submit',
+      async function(e){
 
-      try{
-        botao.disabled = true
-        botao.innerText = 'Processando...'
+        e.preventDefault()
 
-        const nome = document.getElementById('nome').value
-        const cpf = document.getElementById('cpf').value
-        const email = document.getElementById('email').value
-        const whatsapp = document.getElementById('whatsapp').value
-        const nome_artistico = document.getElementById('nome_artistico').value
-        const titulo = document.getElementById('titulo').value
-        const tipo = document.getElementById('tipo').value
-        const arquivo = document.getElementById('arquivo').files[0]
+        try{
 
-        if(!arquivo){
-          alert('Selecione um arquivo')
-          return
+          botao.disabled = true
+          botao.innerText = 'Processando...'
+
+          const nome =
+            document.getElementById('nome').value
+
+          const cpf =
+            document.getElementById('cpf').value
+
+          const email =
+            document.getElementById('email').value
+
+          const whatsapp =
+            document.getElementById('whatsapp').value
+
+          const nome_artistico =
+            document.getElementById('nome_artistico').value
+
+          const titulo =
+            document.getElementById('titulo').value
+
+          const tipo =
+            document.getElementById('tipo').value
+
+          const arquivo =
+            document.getElementById('arquivo').files[0]
+
+          if(!arquivo){
+            alert('Selecione um arquivo')
+            return
+          }
+
+          status('Gerando hash SHA-256...')
+
+          const hashSHA256 =
+            await gerarHashSHA256(arquivo)
+
+          const protocolo =
+            'RM-' + Date.now()
+
+          const nomeLimpo =
+            arquivo.name
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g,'')
+              .replace(/[^a-zA-Z0-9._-]/g,'-')
+              .toLowerCase()
+
+          const nomeArquivo =
+            Date.now() + '-' + nomeLimpo
+
+          const linkVerificacao =
+            window.location.origin +
+            '/verificar.html?protocolo=' +
+            protocolo
+
+          const qrCode =
+            'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' +
+            encodeURIComponent(linkVerificacao)
+
+          status('Enviando arquivo...')
+
+          const upload =
+            await supabaseClient.storage
+              .from('obras')
+              .upload(nomeArquivo, arquivo)
+
+          if(upload.error)
+            throw upload.error
+
+          status('Salvando registro...')
+
+          const salvar =
+            await supabaseClient
+              .from('registros')
+              .insert([{
+                nome,
+                cpf,
+                email,
+                whatsapp,
+                nome_artistico,
+                titulo,
+                tipo,
+                arquivo: upload.data.path,
+                hash_sha256: hashSHA256,
+                protocolo,
+                qr_code: qrCode,
+                valor: 37.50,
+                status_pagamento:
+                  'aguardando_pagamento'
+              }])
+              .select()
+              .single()
+
+          if(salvar.error)
+            throw salvar.error
+
+          status('Criando pagamento no PagBank...')
+
+          const respostaPagamento =
+            await fetch(
+              '/.netlify/functions/criar-pagamento',
+              {
+                method:'POST',
+
+                headers:{
+                  'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify({
+                  nome,
+                  email,
+                  protocolo,
+                  registro_id: salvar.data.id
+                })
+              }
+            )
+
+          const retorno =
+            await respostaPagamento.json()
+
+          if(!respostaPagamento.ok){
+
+            console.log(
+              'ERRO PAGBANK:',
+              retorno
+            )
+
+            throw new Error(
+              (retorno.erro ||
+                'Erro ao criar pagamento') +
+
+              '\n\nSTATUS HTTP: ' +
+              respostaPagamento.status +
+
+              '\n\nDETALHE:\n' +
+
+              JSON.stringify(
+                retorno.detalhe || retorno,
+                null,
+                2
+              )
+            )
+          }
+
+          const pagamento =
+            retorno.pagamento
+
+          const linkPagamento =
+            encontrarLinkPagamento(pagamento)
+
+          const pagbankId =
+            pagamento?.id ||
+            pagamento?.reference_id ||
+            null
+
+          if(!linkPagamento){
+
+            console.log(
+              'Resposta PagBank:',
+              pagamento
+            )
+
+            throw new Error(
+              'Pagamento criado, mas o link não foi encontrado.'
+            )
+          }
+
+          await supabaseClient
+            .from('registros')
+            .update({
+              link_pagamento: linkPagamento,
+              pagbank_id: pagbankId
+            })
+            .eq('protocolo', protocolo)
+
+          statusBox.classList.add('hidden')
+          formBox.classList.add('hidden')
+          resultado.classList.remove('hidden')
+
+          resultado.innerHTML = `
+            <h2 class="text-2xl font-bold text-green-400">
+              Registro criado com sucesso!
+            </h2>
+
+            <div class="mt-6 text-gray-300 space-y-3">
+
+              <p>
+                <strong>Protocolo:</strong>
+                ${protocolo}
+              </p>
+
+              <p>
+                <strong>Status:</strong>
+                aguardando pagamento
+              </p>
+
+              <p>
+                <strong>Valor:</strong>
+                R$ 37,50
+              </p>
+
+              <p class="text-gray-400">
+                Clique abaixo para pagar com Pix ou cartão pelo PagBank.
+              </p>
+
+            </div>
+
+            <a href="${linkPagamento}" target="_blank"
+              class="inline-block mt-6 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
+              Pagar agora
+            </a>
+
+            <a href="verificar.html?protocolo=${protocolo}"
+              class="inline-block mt-4 ml-0 md:ml-3 border border-white/20 hover:border-green-400 transition px-8 py-4 rounded-2xl">
+              Ver página de verificação
+            </a>
+          `
+
+          form.reset()
+
+        }catch(error){
+
+          console.error(error)
+
+          alert(
+            'Erro: ' + error.message
+          )
+
+          status(
+            'Erro: ' + error.message
+          )
+
+        }finally{
+
+          botao.disabled = false
+
+          botao.innerText =
+            'Criar registro e seguir para pagamento'
         }
-
-        status('Gerando hash SHA-256...')
-
-        const hashSHA256 = await gerarHashSHA256(arquivo)
-        const protocolo = 'RM-' + Date.now()
-
-        const nomeLimpo = arquivo.name
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^a-zA-Z0-9._-]/g, '-')
-          .toLowerCase()
-
-        const nomeArquivo = Date.now() + '-' + nomeLimpo
-
-        const linkVerificacao =
-          window.location.origin + '/verificar.html?protocolo=' + protocolo
-
-        const qrCode =
-          'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' +
-          encodeURIComponent(linkVerificacao)
-
-        status('Enviando arquivo...')
-
-        const upload = await supabaseClient.storage
-          .from('obras')
-          .upload(nomeArquivo, arquivo)
-
-        if(upload.error) throw upload.error
-
-        status('Salvando registro...')
-
-        const salvar = await supabaseClient
-          .from('registros')
-          .insert([{
-            nome,
-            cpf,
-            email,
-            whatsapp,
-            nome_artistico,
-            titulo,
-            tipo,
-            arquivo: upload.data.path,
-            hash_sha256: hashSHA256,
-            protocolo,
-            qr_code: qrCode,
-            valor: 37.50,
-            status_pagamento: 'aguardando_pagamento'
-          }])
-          .select()
-          .single()
-
-        if(salvar.error) throw salvar.error
-
-        status('Criando pagamento no PagBank...')
-
-        const respostaPagamento = await fetch('/.netlify/functions/criar-pagamento', {
-          method:'POST',
-          headers:{ 'Content-Type':'application/json' },
-          body:JSON.stringify({
-            nome,
-            email,
-            protocolo,
-            registro_id: salvar.data.id
-          })
-        })
-
-        const retorno = await respostaPagamento.json()
-
-        if(!respostaPagamento.ok){
-          throw new Error(retorno.erro || 'Erro ao criar pagamento')
-        }
-
-        const pagamento = retorno.pagamento
-        const linkPagamento = encontrarLinkPagamento(pagamento)
-        const pagbankId = pagamento?.id || pagamento?.reference_id || null
-
-        if(!linkPagamento){
-          console.log('Resposta PagBank:', pagamento)
-          throw new Error('Pagamento criado, mas o link não foi encontrado.')
-        }
-
-        await supabaseClient
-          .from('registros')
-          .update({
-            link_pagamento: linkPagamento,
-            pagbank_id: pagbankId
-          })
-          .eq('protocolo', protocolo)
-
-        statusBox.classList.add('hidden')
-        form.classList.add('hidden')
-        resultado.classList.remove('hidden')
-
-        resultado.innerHTML = `
-          <h2 class="text-2xl font-bold text-green-400">
-            Registro criado com sucesso!
-          </h2>
-
-          <div class="mt-6 text-gray-300 space-y-3">
-            <p><strong>Protocolo:</strong> ${protocolo}</p>
-            <p><strong>Status:</strong> aguardando pagamento</p>
-            <p><strong>Valor:</strong> R$ 37,50</p>
-            <p class="text-gray-400">
-              Clique abaixo para pagar com Pix ou cartão pelo PagBank.
-            </p>
-          </div>
-
-          <a href="${linkPagamento}" target="_blank"
-            class="inline-block mt-6 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
-            Pagar agora
-          </a>
-
-          <a href="verificar.html?protocolo=${protocolo}"
-            class="inline-block mt-4 ml-0 md:ml-3 border border-white/20 hover:border-green-400 transition px-8 py-4 rounded-2xl">
-            Ver página de verificação
-          </a>
-        `
-
-        form.reset()
-
-      }catch(error){
-        console.error(error)
-        alert('Erro: ' + error.message)
-        status('Erro: ' + error.message)
-      }finally{
-        botao.disabled = false
-        botao.innerText = 'Criar registro e seguir para pagamento'
       }
-    })
+    )
+
   </script>
+
 </body>
 </html>
