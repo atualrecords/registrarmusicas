@@ -18,7 +18,7 @@
       background:rgba(255,255,255,0.035);
       border:1px solid rgba(255,255,255,0.08);
     }
-    textarea{ min-height:150px; }
+    textarea{ min-height:140px; }
   </style>
 </head>
 
@@ -48,17 +48,13 @@
           <div class="info rounded-2xl p-5 mb-4 text-sm text-gray-300 leading-relaxed">
             <p class="font-bold text-white mb-2">IMPORTANTE! Sobre os AUTORES</p>
             <p>
-              Informe todos os autores da obra. Você pode incluir CPF, CNPJ e a participação de cada coautor.
+              Informe apenas o nome de todos os autores da obra. Caso exista mais de um autor,
+              informe um por linha. O CPF deve ser informado no campo próprio abaixo.
             </p>
             <p class="mt-3 text-gray-400">
               Exemplo:<br>
-              João da Silva - CPF 999.999.999-99<br>
-              José dos Santos - CPF 888.888.888-88
-            </p>
-            <p class="mt-3 text-gray-400">
-              Exemplo com participação:<br>
-              João da Silva - CPF 999.999.999-99 - Letra<br>
-              José dos Santos - CPF 888.888.888-88 - Música
+              João da Silva<br>
+              José dos Santos
             </p>
           </div>
 
@@ -71,24 +67,42 @@
 
         <div>
           <label class="block mb-3 text-lg font-bold text-green-400">
+            Participação Autoral / Direitos Morais
+          </label>
+
+          <div class="info rounded-2xl p-5 mb-4 text-sm text-gray-300 leading-relaxed">
+            <p>
+              Informe a participação criativa de cada autor na obra. Você pode indicar a função exercida,
+              o percentual de participação ou ambos.
+            </p>
+
+            <p class="mt-3 text-gray-400">
+              Exemplo:<br>
+              João da Silva - Letra - 50%<br>
+              José dos Santos - Música - 50%
+            </p>
+          </div>
+
+          <textarea id="participacao_autoral" placeholder="Informe a participação autoral"
+            class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"></textarea>
+        </div>
+
+        <div>
+          <label class="block mb-3 text-lg font-bold text-green-400">
             Quem é o(a) TITULAR dos direitos patrimoniais? *
           </label>
 
           <div class="info rounded-2xl p-5 mb-4 text-sm text-gray-300 leading-relaxed">
             <p class="font-bold text-white mb-2">IMPORTANTE! Sobre o TITULAR</p>
             <p>
-              O titular é quem possui os direitos econômicos da obra. Em obras autorais, normalmente o titular é o próprio autor.
-              Em trabalhos contratados, pode ser o cliente, empresa ou contratante.
+              O titular é quem possui, administra ou explora economicamente a obra.
+              Pode ser o próprio autor, uma empresa, editora, produtora, gravadora,
+              contratante ou pessoa para quem os direitos patrimoniais foram cedidos ou licenciados.
             </p>
             <p class="mt-3 text-gray-400">
               Exemplo:<br>
-              Empresa da Silva & Filhos Ltda - CNPJ 99.999.999/9999-99<br>
-              Carlos Alberto da Silva - CPF 999.999.999-99
-            </p>
-            <p class="mt-3 text-gray-400">
-              Exemplo com participação:<br>
-              Empresa da Silva & Filhos Ltda - CNPJ 99.999.999/9999-99 - 90%<br>
-              Carlos Alberto da Silva - CPF 999.999.999-99 - 10%
+              Atual Records Produções MEI<br>
+              João da Silva
             </p>
           </div>
 
@@ -99,12 +113,34 @@
             </p>
           </div>
 
-          <textarea id="titular" required placeholder="Informe o(s) titular(es) dos direitos"
+          <textarea id="titular" required placeholder="Informe o(s) titular(es) dos direitos patrimoniais"
             class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"></textarea>
         </div>
 
-        <input id="cpf_titular" type="text" required placeholder="CPF ou CNPJ do(a) TITULAR"
+        <input id="cpf_titular" type="text" required placeholder="CPF ou CNPJ do(s) TITULAR(ES)"
           class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
+
+        <div>
+          <label class="block mb-3 text-lg font-bold text-green-400">
+            Participação Patrimonial / Econômica
+          </label>
+
+          <div class="info rounded-2xl p-5 mb-4 text-sm text-gray-300 leading-relaxed">
+            <p>
+              Informe como os direitos econômicos, administrativos ou ganhos da obra serão divididos.
+              Caso não seja informado, presume-se divisão igual entre os titulares.
+            </p>
+
+            <p class="mt-3 text-gray-400">
+              Exemplo:<br>
+              Atual Records Produções MEI - 90%<br>
+              João da Silva - 10%
+            </p>
+          </div>
+
+          <textarea id="participacao_patrimonial" placeholder="Informe a participação patrimonial"
+            class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"></textarea>
+        </div>
 
         <input id="email" type="email" required placeholder="E-mail"
           class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
@@ -130,26 +166,32 @@
           <select id="tipo" required
             class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4">
             <option>Obra musical (Letra e Música)</option>
-            <option>Obra musical (Música)</option>
-            <option>Obra audiovisual</option>
-            <option>Obra fotográfica</option>
-            <option>Fotografia</option>
-            <option>Desenho</option>
-            <option>Livro ou E-book</option>
-            <option>Audiobook</option>
-            <option>Podcast</option>
-            <option>Slogan</option>
-            <option>Poesia / Versos</option>
-            <option>Personagem</option>
+            <option>Obra musical (Instrumental)</option>
+            <option>Letra (sem música)</option>
+            <option>Arranjo musical</option>
             <option>Beat</option>
-            <option>Instrumental</option>
             <option>Jingle</option>
+            <option>Fonograma</option>
+            <option>Obra audiovisual</option>
+            <option>Podcast</option>
+            <option>Audiobook</option>
+            <option>Livro</option>
+            <option>E-book</option>
             <option>Roteiro</option>
             <option>Curso</option>
-            <option>Software</option>
-            <option>Website</option>
+            <option>Apostila</option>
+            <option>Fotografia</option>
+            <option>Obra fotográfica</option>
+            <option>Desenho</option>
+            <option>Ilustração</option>
+            <option>História em Quadrinhos</option>
+            <option>Personagem</option>
             <option>Logomarca</option>
             <option>Projeto gráfico</option>
+            <option>Website</option>
+            <option>Software</option>
+            <option>Poesia / Versos</option>
+            <option>Slogan</option>
             <option>Outros</option>
           </select>
         </div>
@@ -169,7 +211,8 @@
         <div class="flex gap-3 items-start">
           <input id="declaracao" type="checkbox" required class="mt-1">
           <p class="text-gray-400 text-sm">
-            Declaro ser responsável pelo conteúdo enviado, pelas informações fornecidas e possuir os direitos necessários sobre a obra registrada.
+            Declaro ser responsável pelo conteúdo enviado, pelas informações fornecidas
+            e possuir os direitos necessários sobre a obra registrada.
           </p>
         </div>
 
@@ -205,12 +248,15 @@
     const titularCampo = document.getElementById('titular')
     const cpfCampo = document.getElementById('cpf')
     const cpfTitularCampo = document.getElementById('cpf_titular')
+    const participacaoAutoralCampo = document.getElementById('participacao_autoral')
+    const participacaoPatrimonialCampo = document.getElementById('participacao_patrimonial')
     const mesmoTitular = document.getElementById('mesmoTitular')
 
     mesmoTitular.addEventListener('change', function(){
       if(this.checked){
         titularCampo.value = autoresCampo.value
         cpfTitularCampo.value = cpfCampo.value
+        participacaoPatrimonialCampo.value = participacaoAutoralCampo.value
       }
     })
 
@@ -223,6 +269,12 @@
     cpfCampo.addEventListener('input', function(){
       if(mesmoTitular.checked){
         cpfTitularCampo.value = cpfCampo.value
+      }
+    })
+
+    participacaoAutoralCampo.addEventListener('input', function(){
+      if(mesmoTitular.checked){
+        participacaoPatrimonialCampo.value = participacaoAutoralCampo.value
       }
     })
 
@@ -241,7 +293,10 @@
     function encontrarLinkPagamento(pagamento){
       if(pagamento?.links && Array.isArray(pagamento.links)){
         const linkPay = pagamento.links.find(l =>
-          l.rel === 'PAY' || l.rel === 'payment' || l.rel === 'checkout' || l.media === 'text/html'
+          l.rel === 'PAY' ||
+          l.rel === 'payment' ||
+          l.rel === 'checkout' ||
+          l.media === 'text/html'
         )
         if(linkPay?.href) return linkPay.href
       }
@@ -262,8 +317,10 @@
 
         const autores = document.getElementById('autores').value
         const cpf = document.getElementById('cpf').value
+        const participacao_autoral = document.getElementById('participacao_autoral').value
         const titular = document.getElementById('titular').value
         const cpf_titular = document.getElementById('cpf_titular').value
+        const participacao_patrimonial = document.getElementById('participacao_patrimonial').value
         const email = document.getElementById('email').value
         const whatsapp = document.getElementById('whatsapp').value
         const nome_artistico = document.getElementById('nome_artistico').value
@@ -314,8 +371,10 @@
             nome,
             cpf,
             autores,
+            participacao_autoral,
             titular,
             cpf_titular,
+            participacao_patrimonial,
             email,
             whatsapp,
             nome_artistico,
