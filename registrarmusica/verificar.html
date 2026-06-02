@@ -278,29 +278,15 @@
       const pagamento = await respostaPagamento.json()
       const statusPagamento = pagamento.status || 'PENDING'
 
-      const pagamentoTexto =
-        statusPagamento === 'PAID'
-          ? 'Pagamento aprovado'
-          : 'Aguardando pagamento'
+      const pagamentoTexto = 'MODO TESTE'
+      const pagamentoClasse = 'text-green-400'
 
-      const pagamentoClasse =
-        statusPagamento === 'PAID'
-          ? 'text-green-400'
-          : 'text-yellow-400'
-
-      const botaoCertificado =
-        statusPagamento === 'PAID'
-          ? `
-            <button onclick="baixarCertificado()"
-              class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
-              Baixar Certificado PDF
-            </button>
-          `
-          : `
-            <p class="mt-8 text-yellow-400 font-semibold">
-              O certificado será liberado após a confirmação do pagamento.
-            </p>
-          `
+      const botaoCertificado = `
+        <button onclick="baixarCertificado()"
+          class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
+          Baixar Certificado PDF
+        </button>
+      `
 
       resultado.classList.remove('hidden')
 
