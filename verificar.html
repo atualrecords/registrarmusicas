@@ -240,10 +240,7 @@
       doc.setFontSize(9)
       doc.text(`Campos dos Goytacazes - RJ, ${dataRegistro}`,105,230,{align:'center'})
 
-      // Linha separadora inferior
-      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
-      doc.setLineWidth(0.4)
-      doc.line(30,233,180,233)
+      // Linha separadora inferior removida nesta versão de teste
 
       // Carimbo à esquerda
       try{
@@ -273,16 +270,12 @@
       // QR à direita
       try{
         const qrUrl =
-          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=000000&bgcolor=FFFFFF&data=' +
+          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=784E16&bgcolor=F8F3E5&data=' +
           encodeURIComponent(linkValidacao)
 
         const qrBase64 = await imagemParaBase64(qrUrl)
 
-        // Base branca maior para evitar qualquer interferência visual no QR Code
-        doc.setFillColor(255,255,255)
-        doc.roundedRect(137,235,36,36,1.5,1.5,'F')
-
-        // QR em alta resolução e sem compressão para não criar manchas/artefatos
+        // QR marrom com fundo creme, sem caixa branca externa
         doc.addImage(qrBase64,'PNG',141,239,28,28,undefined,'NONE')
 
         doc.setFont('helvetica','normal')
@@ -307,8 +300,7 @@
       )
 
       // Rodapé institucional reposicionado
-      doc.setFillColor(creme[0],creme[1],creme[2])
-      doc.rect(45,264,120,13,'F')
+      // Removida a caixa de fundo que estava passando por cima do QR Code
 
       doc.setFont('times','bold')
       doc.setFontSize(7.2)
