@@ -1,188 +1,350 @@
-async function baixarCertificado(){
-  const { jsPDF } = window.jspdf
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Certificado</title>
 
-  const doc = new jsPDF({
-    orientation:'portrait',
-    unit:'mm',
-    format:'a4'
-  })
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  const data = registroAtual
+  <style>
+    body{ background:#050505; }
+    .glass{
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
 
-  const largura = 210
-  const altura = 297
+<body class="text-white min-h-screen px-6 py-16">
 
-  const dourado = [200,162,74]
-  const douradoEscuro = [140,95,28]
-  const creme = [247,242,232]
-  const grafite = [28,28,28]
-  const marrom = [92,63,28]
-  const azulAtual = [20,40,160]
-  const verdeAtual = [92,224,0]
+  <div class="max-w-4xl mx-auto">
 
-  const linkValidacao =
-    `${window.location.origin}/verificar.html?protocolo=${data.protocolo}`
+    <div class="text-center">
+      <h1 class="text-5xl font-bold">Verificar Certificado</h1>
+      <p class="mt-4 text-gray-400 text-lg">
+        Consulte a autenticidade de um registro pelo protocolo.
+      </p>
+    </div>
 
-  doc.setFillColor(creme[0],creme[1],creme[2])
-  doc.rect(0,0,largura,altura,'F')
+    <div class="glass rounded-[40px] p-10 mt-12">
 
-  // Moldura externa
-  doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-  doc.setLineWidth(2.2)
-  doc.rect(8,8,194,281)
+      <label class="block mb-3 text-gray-300">Protocolo</label>
 
-  doc.setDrawColor(dourado[0],dourado[1],dourado[2])
-  doc.setLineWidth(0.6)
-  doc.rect(13,13,184,271)
+      <input
+        id="protocolo"
+        type="text"
+        placeholder="Ex: RM-1778182123147"
+        class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"
+      >
 
-  doc.setLineWidth(0.25)
-  doc.rect(18,18,174,261)
+      <button
+        onclick="verificarRegistro()"
+        class="mt-6 w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg"
+      >
+        Verificar
+      </button>
 
-  // Marca d'água RA
-  doc.setTextColor(230,218,190)
-  doc.setFont('times','bold')
-  doc.setFontSize(82)
-  doc.text('RA',105,162,{align:'center'})
+      <div id="resultado" class="mt-10 hidden glass rounded-3xl p-8"></div>
 
-  // Logo
-  try{
-    const logo = await imagemParaBase64('logo-registrar-agora.png')
-    doc.addImage(logo,'PNG',63,20,84,36)
-  }catch(e){
-    doc.setFont('times','bold')
-    doc.setFontSize(18)
-    doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-    doc.text('REGISTRAR AGORA',105,38,{align:'center'})
-  }
+    </div>
 
-  // Título
-  doc.setFont('times','bold')
-  doc.setFontSize(17)
-  doc.setTextColor(azulAtual[0],azulAtual[1],azulAtual[2])
-  doc.text('CERTIFICADO DE REGISTRO AUTORAL DIGITAL',105,68,{align:'center'})
+  </div>
 
-  doc.setDrawColor(dourado[0],dourado[1],dourado[2])
-  doc.setLineWidth(0.5)
-  doc.line(35,75,175,75)
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  // Texto principal
-  doc.setFont('times','normal')
-  doc.setFontSize(9.5)
-  doc.setTextColor(grafite[0],grafite[1],grafite[2])
+  <script>
+    const supabaseUrl = 'https://bdtswwyctsesszfyicoz.supabase.co'
 
-  const textoCertificacao =
-    'Certificamos que a obra abaixo identificada foi registrada na plataforma Registrar Agora através de tecnologia de anterioridade digital, recebendo protocolo exclusivo, hash criptográfico SHA-256 e mecanismo público de verificação de autenticidade.'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdHN3d3ljdHNlc3N6ZnlpY296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNTg4NDksImV4cCI6MjA5MzczNDg0OX0.MDB0cZsOq4EhsoJDrkistbB9Xy12DS_oxpjqDpiE-BA'
 
-  doc.text(
-    doc.splitTextToSize(textoCertificacao,160),
-    25,
-    86,
-    {align:'center'}
-  )
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
-  // Caixa de dados
-  doc.setFillColor(255,252,242)
-  doc.roundedRect(23,105,164,92,3,3,'F')
-  doc.setDrawColor(dourado[0],dourado[1],dourado[2])
-  doc.roundedRect(23,105,164,92,3,3,'S')
+    let registroAtual = null
 
-  function tituloSecao(texto,y){
-    doc.setFont('times','bold')
-    doc.setFontSize(8.5)
-    doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-    doc.text(texto,30,y)
-  }
+    async function imagemParaBase64(url){
+      const response = await fetch(url)
+      const blob = await response.blob()
 
-  function textoCampo(texto,y){
-    doc.setFont('times','normal')
-    doc.setFontSize(8.5)
-    doc.setTextColor(grafite[0],grafite[1],grafite[2])
-    doc.text(doc.splitTextToSize(texto || '-',120),72,y)
-  }
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      })
+    }
 
-  tituloSecao('PROTOCOLO:',115)
-  textoCampo(data.protocolo,115)
+    async function baixarCertificado(){
+      const { jsPDF } = window.jspdf
 
-  tituloSecao('TÍTULO:',126)
-  textoCampo(data.titulo,126)
+      const doc = new jsPDF({
+        orientation:'portrait',
+        unit:'mm',
+        format:'a4'
+      })
 
-  tituloSecao('TIPO DE OBRA:',137)
-  textoCampo(data.tipo,137)
+      const data = registroAtual
 
-  tituloSecao('AUTOR(ES):',148)
-  textoCampo(data.autores || data.nome,148)
+      const dourado = [200,162,74]
+      const douradoEscuro = [140,95,28]
+      const creme = [247,242,232]
+      const grafite = [28,28,28]
+      const marrom = [92,63,28]
+      const azulAtual = [20,40,160]
+      const verdeAtual = [92,224,0]
 
-  tituloSecao('PARTICIPAÇÃO AUTORAL:',162)
-  textoCampo(data.participacao_autoral || '-',162)
+      const linkValidacao =
+        `${window.location.origin}/verificar.html?protocolo=${data.protocolo}`
 
-  tituloSecao('TITULAR(ES):',176)
-  textoCampo(data.titular || data.nome,176)
+      doc.setFillColor(creme[0],creme[1],creme[2])
+      doc.rect(0,0,210,297,'F')
 
-  tituloSecao('PARTICIPAÇÃO PATRIMONIAL:',190)
-  textoCampo(data.participacao_patrimonial || '-',190)
+      doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.setLineWidth(2.2)
+      doc.rect(8,8,194,281)
 
-  // Hash
-  doc.setFont('times','bold')
-  doc.setFontSize(10)
-  doc.setTextColor(azulAtual[0],azulAtual[1],azulAtual[2])
-  doc.text('HASH SHA-256',105,211,{align:'center'})
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.6)
+      doc.rect(13,13,184,271)
 
-  doc.setFont('courier','normal')
-  doc.setFontSize(7.8)
-  doc.setTextColor(70,70,70)
-  doc.text(
-    doc.splitTextToSize(data.hash_sha256 || '-',150),
-    105,
-    219,
-    {align:'center'}
-  )
+      doc.setLineWidth(0.25)
+      doc.rect(18,18,174,261)
 
-  // QR Code
-  try{
-    const qrUrl =
-      'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' +
-      encodeURIComponent(linkValidacao)
+      doc.setTextColor(230,218,190)
+      doc.setFont('times','bold')
+      doc.setFontSize(82)
+      doc.text('RA',105,162,{align:'center'})
 
-    const qrBase64 = await imagemParaBase64(qrUrl)
+      try{
+        const logo = await imagemParaBase64('logo-registrar-agora.png')
+        doc.addImage(logo,'PNG',63,20,84,36)
+      }catch(e){
+        doc.setFont('times','bold')
+        doc.setFontSize(18)
+        doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+        doc.text('REGISTRAR AGORA',105,38,{align:'center'})
+      }
 
-    doc.setFillColor(255,255,255)
-    doc.roundedRect(81,230,48,48,2,2,'F')
-    doc.addImage(qrBase64,'PNG',86,235,38,38)
+      doc.setFont('times','bold')
+      doc.setFontSize(17)
+      doc.setTextColor(azulAtual[0],azulAtual[1],azulAtual[2])
+      doc.text('CERTIFICADO DE REGISTRO AUTORAL DIGITAL',105,68,{align:'center'})
 
-    doc.setFont('helvetica','normal')
-    doc.setFontSize(7)
-    doc.setTextColor(marrom[0],marrom[1],marrom[2])
-    doc.text('Escaneie para validar autenticidade',105,282,{align:'center'})
-  }catch(e){
-    doc.setFontSize(8)
-    doc.text('QR Code indisponível',105,250,{align:'center'})
-  }
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.5)
+      doc.line(35,75,175,75)
 
-  // Selo textual
-  doc.setDrawColor(verdeAtual[0],verdeAtual[1],verdeAtual[2])
-  doc.setLineWidth(0.6)
-  doc.roundedRect(148,214,35,13,2,2,'S')
+      const textoCertificacao =
+        'Certificamos que a obra abaixo identificada foi registrada na plataforma Registrar Agora através de tecnologia de anterioridade digital, recebendo protocolo exclusivo, hash criptográfico SHA-256 e mecanismo público de verificação de autenticidade.'
 
-  doc.setFont('helvetica','bold')
-  doc.setFontSize(6.5)
-  doc.setTextColor(verdeAtual[0],verdeAtual[1],verdeAtual[2])
-  doc.text('VERIFICAÇÃO',165.5,219,{align:'center'})
-  doc.text('DIGITAL',165.5,223,{align:'center'})
+      doc.setFont('times','normal')
+      doc.setFontSize(9.5)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text(doc.splitTextToSize(textoCertificacao,160),105,86,{align:'center'})
 
-  // Rodapé institucional
-  doc.setDrawColor(dourado[0],dourado[1],dourado[2])
-  doc.setLineWidth(0.4)
-  doc.line(45,286,165,286)
+      doc.setFillColor(255,252,242)
+      doc.roundedRect(23,105,164,92,3,3,'F')
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.roundedRect(23,105,164,92,3,3,'S')
 
-  doc.setFont('times','bold')
-  doc.setFontSize(8.5)
-  doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-  doc.text('REGISTRAR AGORA',105,290,{align:'center'})
+      function tituloSecao(texto,y){
+        doc.setFont('times','bold')
+        doc.setFontSize(8.5)
+        doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+        doc.text(texto,30,y)
+      }
 
-  doc.setFont('times','normal')
-  doc.setFontSize(6.3)
-  doc.setTextColor(marrom[0],marrom[1],marrom[2])
-  doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,294,{align:'center'})
+      function textoCampo(texto,y){
+        doc.setFont('times','normal')
+        doc.setFontSize(8.5)
+        doc.setTextColor(grafite[0],grafite[1],grafite[2])
+        doc.text(doc.splitTextToSize(texto || '-',120),72,y)
+      }
 
-  doc.save(`certificado-${data.protocolo}.pdf`)
-}
+      tituloSecao('PROTOCOLO:',115)
+      textoCampo(data.protocolo,115)
+
+      tituloSecao('TÍTULO:',126)
+      textoCampo(data.titulo,126)
+
+      tituloSecao('TIPO DE OBRA:',137)
+      textoCampo(data.tipo,137)
+
+      tituloSecao('AUTOR(ES):',148)
+      textoCampo(data.autores || data.nome,148)
+
+      tituloSecao('PARTICIPAÇÃO AUTORAL:',162)
+      textoCampo(data.participacao_autoral || '-',162)
+
+      tituloSecao('TITULAR(ES):',176)
+      textoCampo(data.titular || data.nome,176)
+
+      tituloSecao('PARTICIPAÇÃO PATRIMONIAL:',190)
+      textoCampo(data.participacao_patrimonial || '-',190)
+
+      doc.setFont('times','bold')
+      doc.setFontSize(10)
+      doc.setTextColor(azulAtual[0],azulAtual[1],azulAtual[2])
+      doc.text('HASH SHA-256',105,211,{align:'center'})
+
+      doc.setFont('courier','normal')
+      doc.setFontSize(7.8)
+      doc.setTextColor(70,70,70)
+      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',150),105,219,{align:'center'})
+
+      try{
+        const qrUrl =
+          'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' +
+          encodeURIComponent(linkValidacao)
+
+        const qrBase64 = await imagemParaBase64(qrUrl)
+
+        doc.setFillColor(255,255,255)
+        doc.roundedRect(81,230,48,48,2,2,'F')
+        doc.addImage(qrBase64,'PNG',86,235,38,38)
+
+        doc.setFont('helvetica','normal')
+        doc.setFontSize(7)
+        doc.setTextColor(marrom[0],marrom[1],marrom[2])
+        doc.text('Escaneie para validar autenticidade',105,282,{align:'center'})
+      }catch(e){
+        doc.setFontSize(8)
+        doc.text('QR Code indisponível',105,250,{align:'center'})
+      }
+
+      doc.setDrawColor(verdeAtual[0],verdeAtual[1],verdeAtual[2])
+      doc.setLineWidth(0.6)
+      doc.roundedRect(148,214,35,13,2,2,'S')
+
+      doc.setFont('helvetica','bold')
+      doc.setFontSize(6.5)
+      doc.setTextColor(verdeAtual[0],verdeAtual[1],verdeAtual[2])
+      doc.text('VERIFICAÇÃO',165.5,219,{align:'center'})
+      doc.text('DIGITAL',165.5,223,{align:'center'})
+
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.4)
+      doc.line(45,286,165,286)
+
+      doc.setFont('times','bold')
+      doc.setFontSize(8.5)
+      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.text('REGISTRAR AGORA',105,290,{align:'center'})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(6.3)
+      doc.setTextColor(marrom[0],marrom[1],marrom[2])
+      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,294,{align:'center'})
+
+      doc.save(`certificado-${data.protocolo}.pdf`)
+    }
+
+    async function verificarRegistro(protocoloManual = null){
+      const protocolo =
+        protocoloManual ||
+        document.getElementById('protocolo').value.trim()
+
+      const resultado = document.getElementById('resultado')
+
+      if(!protocolo){
+        alert('Digite um protocolo')
+        return
+      }
+
+      document.getElementById('protocolo').value = protocolo
+
+      const { data, error } = await supabaseClient
+        .from('registros')
+        .select('*')
+        .eq('protocolo', protocolo)
+        .single()
+
+      if(error || !data){
+        resultado.classList.remove('hidden')
+        resultado.innerHTML = `
+          <h2 class="text-2xl font-bold text-red-400">Registro não encontrado</h2>
+          <p class="mt-4 text-gray-400">Verifique se o protocolo foi digitado corretamente.</p>
+        `
+        return
+      }
+
+      registroAtual = data
+
+      const respostaPagamento = await fetch(
+        '/.netlify/functions/verificar-pagamento?protocolo=' + protocolo
+      )
+
+      const pagamento = await respostaPagamento.json()
+      const statusPagamento = pagamento.status || 'PENDING'
+
+      const pagamentoTexto =
+        statusPagamento === 'PAID'
+          ? 'Pagamento aprovado'
+          : 'Aguardando pagamento'
+
+      const pagamentoClasse =
+        statusPagamento === 'PAID'
+          ? 'text-green-400'
+          : 'text-yellow-400'
+
+      const botaoCertificado =
+        statusPagamento === 'PAID'
+          ? `
+            <button onclick="baixarCertificado()"
+              class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
+              Baixar Certificado PDF
+            </button>
+          `
+          : `
+            <p class="mt-8 text-yellow-400 font-semibold">
+              O certificado será liberado após a confirmação do pagamento.
+            </p>
+          `
+
+      resultado.classList.remove('hidden')
+
+      resultado.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-4 h-4 rounded-full bg-green-400"></div>
+          <h2 class="text-3xl font-bold text-green-400">Registro encontrado</h2>
+        </div>
+
+        <div class="mt-8 space-y-4 text-gray-300">
+          <p><strong>Protocolo:</strong> ${data.protocolo}</p>
+          <p><strong>Autor(es):</strong> ${data.autores || data.nome}</p>
+          <p><strong>Participação autoral:</strong> ${data.participacao_autoral || '-'}</p>
+          <p><strong>Titular(es):</strong> ${data.titular || '-'}</p>
+          <p><strong>Participação patrimonial:</strong> ${data.participacao_patrimonial || '-'}</p>
+          <p><strong>CPF:</strong> ${data.cpf || '-'}</p>
+          <p><strong>Nome artístico:</strong> ${data.nome_artistico || '-'}</p>
+          <p><strong>Título da obra:</strong> ${data.titulo}</p>
+          <p><strong>Tipo:</strong> ${data.tipo}</p>
+
+          <p>
+            <strong>Status do pagamento:</strong>
+            <span class="${pagamentoClasse} font-bold">${pagamentoTexto}</span>
+          </p>
+
+          <p><strong>Data do registro:</strong> ${new Date(data.criado_em).toLocaleString('pt-BR')}</p>
+
+          <div class="pt-6 border-t border-white/10">
+            <p class="font-semibold mb-2">Hash SHA-256</p>
+            <p class="break-all text-sm text-green-300">${data.hash_sha256}</p>
+          </div>
+
+          ${botaoCertificado}
+        </div>
+      `
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    const protocoloURL = params.get('protocolo')
+
+    if(protocoloURL){
+      verificarRegistro(protocoloURL)
+    }
+  </script>
+
+</body>
+</html>
