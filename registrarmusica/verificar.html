@@ -201,7 +201,7 @@
       // Participações
       doc.setFont('times','bold')
       doc.setFontSize(9.2)
-      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
       doc.text('Participação Autoral',105,158,{align:'center'})
 
       doc.setFont('times','normal')
@@ -211,7 +211,7 @@
 
       doc.setFont('times','bold')
       doc.setFontSize(9.2)
-      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
       doc.text('Participação Patrimonial',105,180,{align:'center'})
 
       doc.setFont('times','normal')
@@ -239,6 +239,8 @@
       doc.setFont('times','normal')
       doc.setFontSize(9)
       doc.text(`Campos dos Goytacazes - RJ, ${dataRegistro}`,105,230,{align:'center'})
+
+      // Linha separadora inferior removida nesta versão de teste
 
       // Carimbo à esquerda
       try{
@@ -268,12 +270,12 @@
       // QR à direita
       try{
         const qrUrl =
-          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=120-78-22&bgcolor=248-243-229&data=' +
+          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=784E16&bgcolor=F8F3E5&data=' +
           encodeURIComponent(linkValidacao)
 
         const qrBase64 = await imagemParaBase64(qrUrl)
 
-        // QR marrom com fundo creme igual ao papel do certificado
+        // QR marrom com fundo creme, sem caixa branca externa
         doc.addImage(qrBase64,'PNG',141,239,28,28,undefined,'NONE')
 
         doc.setFont('helvetica','normal')
