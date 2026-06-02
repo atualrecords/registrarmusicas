@@ -76,8 +76,15 @@
       })
     }
 
-    function campo(data, principal, fallback = '-'){
-      return data?.[principal] || fallback
+    function textoSeguro(valor, fallback = '-'){
+      if(valor === null || valor === undefined) return fallback
+      const limpo = String(valor).trim()
+      return limpo ? limpo : fallback
+    }
+
+    function participacaoTexto(valor){
+      const limpo = textoSeguro(valor, '')
+      return limpo || '100% dos direitos informados no registro'
     }
 
     async function baixarCertificado(){
@@ -95,10 +102,8 @@
       const douradoClaro = [218,181,90]
       const douradoEscuro = [120,78,22]
       const creme = [248,243,229]
-      const papel = [255,252,244]
       const grafite = [28,28,28]
       const marrom = [88,58,24]
-      const azulAtual = [20,40,160]
 
       const linkValidacao =
         `${window.location.origin}/verificar.html?protocolo=${data.protocolo}`
@@ -107,7 +112,7 @@
       doc.setFillColor(creme[0],creme[1],creme[2])
       doc.rect(0,0,210,297,'F')
 
-      // Moldura estilo certificado antigo
+      // Moldura externa
       doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
       doc.setLineWidth(2.0)
       doc.rect(7,7,196,283)
@@ -120,7 +125,7 @@
       doc.setLineWidth(0.3)
       doc.rect(18,18,174,261)
 
-      // Ornamentos simples nas bordas
+      // Ornamentos simples
       doc.setDrawColor(douradoClaro[0],douradoClaro[1],douradoClaro[2])
       doc.setLineWidth(0.18)
 
@@ -138,7 +143,6 @@
         doc.line(192,y+4,196,y+8)
       }
 
-      // Cantos decorativos
       doc.setDrawColor(dourado[0],dourado[1],dourado[2])
       doc.setLineWidth(0.5)
       doc.circle(22,22,4,'S')
@@ -146,16 +150,16 @@
       doc.circle(22,275,4,'S')
       doc.circle(188,275,4,'S')
 
-      // Marca d'água
+      // Marca d'água discreta
       doc.setTextColor(232,222,198)
       doc.setFont('times','bold')
-      doc.setFontSize(78)
-      doc.text('RA',105,160,{align:'center'})
+      doc.setFontSize(76)
+      doc.text('RA',105,157,{align:'center'})
 
       // Logo
       try{
         const logo = await imagemParaBase64('logo-registrar-agora.png')
-        doc.addImage(logo,'PNG',62,18,86,42)
+        doc.addImage(logo,'PNG',64,19,82,38)
       }catch(e){
         doc.setFont('times','bold')
         doc.setFontSize(18)
@@ -163,66 +167,59 @@
         doc.text('REGISTRAR AGORA',105,38,{align:'center'})
       }
 
-      // Título clássico
+      // Título
       doc.setFont('times','italic')
       doc.setFontSize(24)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text('Certificado de Registro Autoral Digital',105,72,{align:'center'})
+      doc.text('Certificado de Registro Autoral Digital',105,71,{align:'center'})
 
       doc.setFont('times','normal')
-      doc.setFontSize(8.5)
+      doc.setFontSize(8.4)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text(`Nº ${data.protocolo || '-'}`,105,80,{align:'center'})
+      doc.text(`Nº ${data.protocolo || '-'}`,105,79,{align:'center'})
 
       doc.setDrawColor(dourado[0],dourado[1],dourado[2])
       doc.setLineWidth(0.45)
-      doc.line(42,86,168,86)
+      doc.line(42,85,168,85)
 
-      // Texto concessão
+      // Corpo
       doc.setFont('times','normal')
       doc.setFontSize(9.2)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text('CONCEDEMOS A',105,98,{align:'center'})
+      doc.text('CONCEDEMOS A',105,96,{align:'center'})
 
       doc.setFont('times','bold')
-      doc.setFontSize(13)
-      doc.text(campo(data,'autores', data.nome || '-'),105,109,{align:'center', maxWidth:160})
+      doc.setFontSize(12.6)
+      doc.text(textoSeguro(data.autores, data.nome || '-'),105,107,{align:'center', maxWidth:160})
 
       doc.setFont('times','normal')
-      doc.setFontSize(11.5)
-      doc.text(`Autor(es) legítimo(s) da obra: ${data.titulo || '-'}`,105,122,{align:'center', maxWidth:170})
-
-      doc.setFontSize(10.5)
-      doc.text(`Tipo de obra: ${data.tipo || '-'}`,105,134,{align:'center', maxWidth:170})
-
-      doc.text(`Titular(es): ${data.titular || data.nome || '-'}`,105,146,{align:'center', maxWidth:170})
+      doc.setFontSize(11)
+      doc.text(`Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,105,120,{align:'center', maxWidth:170})
+      doc.text(`Tipo de obra: ${textoSeguro(data.tipo)}`,105,132,{align:'center', maxWidth:170})
+      doc.text(`Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,105,144,{align:'center', maxWidth:170})
 
       // Participações
-      let yPart = 158
-
       doc.setFont('times','bold')
-      doc.setFontSize(9.4)
+      doc.setFontSize(9.2)
       doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-      doc.text('Participação Autoral',105,yPart,{align:'center'})
+      doc.text('Participação Autoral',105,158,{align:'center'})
 
       doc.setFont('times','normal')
-      doc.setFontSize(8.7)
+      doc.setFontSize(8.4)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text(doc.splitTextToSize(data.participacao_autoral || '-',150),105,yPart+6,{align:'center'})
-
-      yPart += 22
+      doc.text(doc.splitTextToSize(participacaoTexto(data.participacao_autoral),150),105,164,{align:'center'})
 
       doc.setFont('times','bold')
-      doc.setFontSize(9.4)
+      doc.setFontSize(9.2)
       doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-      doc.text('Participação Patrimonial',105,yPart,{align:'center'})
+      doc.text('Participação Patrimonial',105,180,{align:'center'})
 
       doc.setFont('times','normal')
-      doc.setFontSize(8.7)
+      doc.setFontSize(8.4)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text(doc.splitTextToSize(data.participacao_patrimonial || '-',150),105,yPart+6,{align:'center'})
+      doc.text(doc.splitTextToSize(participacaoTexto(data.participacao_patrimonial),150),105,186,{align:'center'})
 
-      // Texto jurídico central
+      // Texto legal
       const textoLegal1 =
         'O presente certificado comprova que a obra informada foi submetida à plataforma Registrar Agora, gerando protocolo único, data de registro e hash criptográfico SHA-256 para comprovação digital de anterioridade autoral.'
 
@@ -230,37 +227,48 @@
         'Quaisquer inconsistências quanto à autoria, titularidade ou informações declaradas são de exclusiva responsabilidade do declarante.'
 
       doc.setFont('times','normal')
-      doc.setFontSize(8.4)
+      doc.setFontSize(8.1)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
       doc.text(doc.splitTextToSize(textoLegal1,168),105,205,{align:'center'})
-      doc.text(doc.splitTextToSize(textoLegal2,168),105,219,{align:'center'})
+      doc.text(doc.splitTextToSize(textoLegal2,168),105,218,{align:'center'})
 
       const dataRegistro = data.criado_em
         ? new Date(data.criado_em).toLocaleString('pt-BR')
         : new Date().toLocaleString('pt-BR')
 
       doc.setFont('times','normal')
-      doc.setFontSize(9.2)
-      doc.text(`Campos dos Goytacazes - RJ, ${dataRegistro}`,105,231,{align:'center'})
+      doc.setFontSize(9)
+      doc.text(`Campos dos Goytacazes - RJ, ${dataRegistro}`,105,230,{align:'center'})
 
-      // Área inferior: carimbo, hash e QR
+      // Linha separadora inferior
       doc.setDrawColor(dourado[0],dourado[1],dourado[2])
       doc.setLineWidth(0.4)
-      doc.line(30,238,180,238)
+      doc.line(30,237,180,237)
 
       // Carimbo à esquerda
       try{
         const carimbo = await imagemParaBase64('carimbo-registrar-agora.png')
-        doc.addImage(carimbo,'PNG',33,241,43,35)
+        doc.addImage(carimbo,'PNG',34,240,40,32)
       }catch(e){
         doc.setDrawColor(150,150,150)
-        doc.circle(54,258,17,'S')
+        doc.circle(54,256,15,'S')
         doc.setFont('times','bold')
-        doc.setFontSize(7)
+        doc.setFontSize(6.5)
         doc.setTextColor(110,110,110)
-        doc.text('REGISTRAR',54,256,{align:'center'})
-        doc.text('AGORA',54,261,{align:'center'})
+        doc.text('REGISTRAR',54,254,{align:'center'})
+        doc.text('AGORA',54,259,{align:'center'})
       }
+
+      // Hash ao centro
+      doc.setFont('times','bold')
+      doc.setFontSize(9)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text('Hash SHA-256',105,247,{align:'center'})
+
+      doc.setFont('courier','normal')
+      doc.setFontSize(5.9)
+      doc.setTextColor(65,65,65)
+      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',58),105,255,{align:'center'})
 
       // QR à direita
       try{
@@ -271,45 +279,38 @@
         const qrBase64 = await imagemParaBase64(qrUrl)
 
         doc.setFillColor(255,255,255)
-        doc.roundedRect(138,241,35,35,1.5,1.5,'F')
-        doc.addImage(qrBase64,'PNG',141,244,29,29)
+        doc.roundedRect(138,240,34,34,1.5,1.5,'F')
+        doc.addImage(qrBase64,'PNG',141,243,28,28)
 
         doc.setFont('helvetica','normal')
-        doc.setFontSize(5.8)
+        doc.setFontSize(5.5)
         doc.setTextColor(marrom[0],marrom[1],marrom[2])
-        doc.text('Escaneie para validar',155.5,279,{align:'center'})
+        doc.text('Escaneie para validar',155,276,{align:'center'})
       }catch(e){
         doc.setFontSize(8)
         doc.text('QR Code indisponível',155,258,{align:'center'})
       }
 
-      // Hash no centro/baixo
-      doc.setFont('times','bold')
-      doc.setFontSize(9.5)
-      doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text('Hash SHA-256',105,248,{align:'center'})
-
-      doc.setFont('courier','normal')
-      doc.setFontSize(6.4)
-      doc.setTextColor(65,65,65)
-      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',56),105,256,{align:'center'})
-
+      // Validação pública dentro da moldura, sem embolar no rodapé
       doc.setFont('times','normal')
-      doc.setFontSize(6.3)
+      doc.setFontSize(5.2)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text(`Validação pública: ${linkValidacao}`,105,282,{align:'center', maxWidth:170})
+      doc.text(`Validação pública: ${linkValidacao}`,105,278,{align:'center', maxWidth:150})
 
-      // Rodapé
+      // Rodapé institucional reposicionado
+      doc.setFillColor(creme[0],creme[1],creme[2])
+      doc.rect(45,280.5,120,7,'F')
+
       doc.setFont('times','bold')
-      doc.setFontSize(8)
+      doc.setFontSize(7.2)
       doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-      doc.text('REGISTRAR AGORA',105,287,{align:'center'})
+      doc.text('REGISTRAR AGORA',105,283,{align:'center'})
 
       doc.setFont('times','normal')
-      doc.setFontSize(6)
+      doc.setFontSize(5.4)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,291,{align:'center'})
-      doc.text('CNPJ: 33.705.089/0001-40',105,294,{align:'center'})
+      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,286,{align:'center'})
+      doc.text('CNPJ: 33.705.089/0001-40',105,288.5,{align:'center'})
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
@@ -374,9 +375,9 @@
         <div class="mt-8 space-y-4 text-gray-300">
           <p><strong>Protocolo:</strong> ${data.protocolo}</p>
           <p><strong>Autor(es):</strong> ${data.autores || data.nome}</p>
-          <p><strong>Participação autoral:</strong> ${data.participacao_autoral || '-'}</p>
+          <p><strong>Participação autoral:</strong> ${data.participacao_autoral || '100% dos direitos informados no registro'}</p>
           <p><strong>Titular(es):</strong> ${data.titular || '-'}</p>
-          <p><strong>Participação patrimonial:</strong> ${data.participacao_patrimonial || '-'}</p>
+          <p><strong>Participação patrimonial:</strong> ${data.participacao_patrimonial || '100% dos direitos informados no registro'}</p>
           <p><strong>CPF:</strong> ${data.cpf || '-'}</p>
           <p><strong>Nome artístico:</strong> ${data.nome_artistico || '-'}</p>
           <p><strong>Título da obra:</strong> ${data.titulo}</p>
