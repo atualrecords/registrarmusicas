@@ -273,14 +273,17 @@
       // QR à direita
       try{
         const qrUrl =
-          'https://api.qrserver.com/v1/create-qr-code/?size=450x450&data=' +
+          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=000000&bgcolor=FFFFFF&data=' +
           encodeURIComponent(linkValidacao)
 
         const qrBase64 = await imagemParaBase64(qrUrl)
 
+        // Base branca maior para evitar qualquer interferência visual no QR Code
         doc.setFillColor(255,255,255)
-        doc.roundedRect(138,236,34,34,1.5,1.5,'F')
-        doc.addImage(qrBase64,'PNG',141,239,28,28)
+        doc.roundedRect(137,235,36,36,1.5,1.5,'F')
+
+        // QR em alta resolução e sem compressão para não criar manchas/artefatos
+        doc.addImage(qrBase64,'PNG',141,239,28,28,undefined,'NONE')
 
         doc.setFont('helvetica','normal')
         doc.setFontSize(5.5)
