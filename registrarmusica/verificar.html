@@ -243,32 +243,32 @@
       // Linha separadora inferior
       doc.setDrawColor(dourado[0],dourado[1],dourado[2])
       doc.setLineWidth(0.4)
-      doc.line(30,237,180,237)
+      doc.line(30,233,180,233)
 
       // Carimbo à esquerda
       try{
         const carimbo = await imagemParaBase64('carimbo-registrar-agora.png')
-        doc.addImage(carimbo,'PNG',34,240,40,32)
+        doc.addImage(carimbo,'PNG',34,236,40,32)
       }catch(e){
         doc.setDrawColor(150,150,150)
-        doc.circle(54,256,15,'S')
+        doc.circle(54,252,15,'S')
         doc.setFont('times','bold')
         doc.setFontSize(6.5)
         doc.setTextColor(110,110,110)
-        doc.text('REGISTRAR',54,254,{align:'center'})
-        doc.text('AGORA',54,259,{align:'center'})
+        doc.text('REGISTRAR',54,250,{align:'center'})
+        doc.text('AGORA',54,255,{align:'center'})
       }
 
       // Hash ao centro
       doc.setFont('times','bold')
       doc.setFontSize(9)
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
-      doc.text('Hash SHA-256',105,247,{align:'center'})
+      doc.text('Hash SHA-256',105,241,{align:'center'})
 
       doc.setFont('courier','normal')
       doc.setFontSize(5.9)
       doc.setTextColor(65,65,65)
-      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',58),105,255,{align:'center'})
+      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',58),105,249,{align:'center'})
 
       // QR à direita
       try{
@@ -279,13 +279,13 @@
         const qrBase64 = await imagemParaBase64(qrUrl)
 
         doc.setFillColor(255,255,255)
-        doc.roundedRect(138,240,34,34,1.5,1.5,'F')
-        doc.addImage(qrBase64,'PNG',141,243,28,28)
+        doc.roundedRect(138,236,34,34,1.5,1.5,'F')
+        doc.addImage(qrBase64,'PNG',141,239,28,28)
 
         doc.setFont('helvetica','normal')
         doc.setFontSize(5.5)
         doc.setTextColor(marrom[0],marrom[1],marrom[2])
-        doc.text('Escaneie para validar',155,276,{align:'center'})
+        doc.text('Escaneie para validar',155,272,{align:'center'})
       }catch(e){
         doc.setFontSize(8)
         doc.text('QR Code indisponível',155,258,{align:'center'})
@@ -299,24 +299,24 @@
       doc.text(
         `Protocolo verificável via QR Code`,
         105,
-        267,
+        260,
         {align:'center'}
       )
 
       // Rodapé institucional reposicionado
       doc.setFillColor(creme[0],creme[1],creme[2])
-      doc.rect(45,273.5,120,10,'F')
+      doc.rect(45,264,120,13,'F')
 
       doc.setFont('times','bold')
       doc.setFontSize(7.2)
       doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
-      doc.text('REGISTRAR AGORA',105,276,{align:'center'})
+      doc.text('REGISTRAR AGORA',105,267,{align:'center'})
 
       doc.setFont('times','normal')
       doc.setFontSize(5.4)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,279,{align:'center'})
-      doc.text('CNPJ: 33.705.089/0001-40',105,282,{align:'center'})
+      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,270,{align:'center'})
+      doc.text('CNPJ: 33.705.089/0001-40',105,273,{align:'center'})
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
