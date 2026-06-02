@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Certificado</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body{ background:#050505; }
+    .glass{
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen px-6 py-16">
+
+  <div class="max-w-4xl mx-auto">
+
+    <div class="text-center">
+      <h1 class="text-5xl font-bold">Verificar Certificado</h1>
+      <p class="mt-4 text-gray-400 text-lg">
+        Consulte a autenticidade de um registro pelo protocolo.
+      </p>
+    </div>
+
+    <div class="glass rounded-[40px] p-10 mt-12">
+
+      <label class="block mb-3 text-gray-300">Protocolo</label>
+
+      <input
+        id="protocolo"
+        type="text"
+        placeholder="Ex: RM-1778182123147"
+        class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4"
+      >
+
+      <button
+        onclick="verificarRegistro()"
+        class="mt-6 w-full bg-green-500 hover:bg-green-400 transition text-black font-bold py-5 rounded-2xl text-lg"
+      >
+        Verificar
+      </button>
+
+      <div id="resultado" class="mt-10 hidden glass rounded-3xl p-8"></div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const supabaseUrl = 'https://bdtswwyctsesszfyicoz.supabase.co'
+
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdHN3d3ljdHNlc3N6ZnlpY296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNTg4NDksImV4cCI6MjA5MzczNDg0OX0.MDB0cZsOq4EhsoJDrkistbB9Xy12DS_oxpjqDpiE-BA'
+
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
+
+    let registroAtual = null
+
+    async function imagemParaBase64(url){
+      const response = await fetch(url)
+      if(!response.ok) throw new Error('Imagem não encontrada: ' + url)
+      const blob = await response.blob()
+
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      })
+    }
+
+    function textoSeguro(valor, fallback = '-'){
+      if(valor === null || valor === undefined) return fallback
+      const limpo = String(valor).trim()
+      return limpo ? limpo : fallback
+    }
+
+    function participacaoTexto(valor){
+      const limpo = textoSeguro(valor, '')
+      return limpo || '100% dos direitos informados no registro'
+    }
+
+    async function baixarCertificado(){
+      const { jsPDF } = window.jspdf
+
+      const doc = new jsPDF({
+        orientation:'portrait',
+        unit:'mm',
+        format:'a4'
+      })
+
+      const data = registroAtual || {}
+
+      const dourado = [184,132,38]
+      const douradoClaro = [218,181,90]
+      const douradoEscuro = [120,78,22]
+      const creme = [248,243,229]
+      const grafite = [28,28,28]
+      const marrom = [88,58,24]
+
+      const linkValidacao =
+        `${window.location.origin}/verificar.html?protocolo=${data.protocolo}`
+
+      // Fundo
+      doc.setFillColor(creme[0],creme[1],creme[2])
+      doc.rect(0,0,210,297,'F')
+
+      // Moldura externa
+      doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.setLineWidth(2.0)
+      doc.rect(7,7,196,283)
+
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.7)
+      doc.rect(12,12,186,273)
+
+      doc.setDrawColor(douradoClaro[0],douradoClaro[1],douradoClaro[2])
+      doc.setLineWidth(0.3)
+      doc.rect(18,18,174,261)
+
+      // Ornamentos simples
+      doc.setDrawColor(douradoClaro[0],douradoClaro[1],douradoClaro[2])
+      doc.setLineWidth(0.18)
+
+      for(let x = 24; x <= 186; x += 10){
+        doc.line(x,14,x+4,18)
+        doc.line(x+4,18,x+8,14)
+        doc.line(x,283,x+4,279)
+        doc.line(x+4,279,x+8,283)
+      }
+
+      for(let y = 24; y <= 273; y += 10){
+        doc.line(14,y,18,y+4)
+        doc.line(18,y+4,14,y+8)
+        doc.line(196,y,192,y+4)
+        doc.line(192,y+4,196,y+8)
+      }
+
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.5)
+      doc.circle(22,22,4,'S')
+      doc.circle(188,22,4,'S')
+      doc.circle(22,275,4,'S')
+      doc.circle(188,275,4,'S')
+
+      // Marca d'água discreta
+      doc.setTextColor(232,222,198)
+      doc.setFont('times','bold')
+      doc.setFontSize(76)
+      doc.text('RA',105,157,{align:'center'})
+
+      // Logo
+      try{
+        const logo = await imagemParaBase64('logo-registrar-agora.png')
+        doc.addImage(logo,'PNG',64,19,82,38)
+      }catch(e){
+        doc.setFont('times','bold')
+        doc.setFontSize(18)
+        doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+        doc.text('REGISTRAR AGORA',105,38,{align:'center'})
+      }
+
+      // Título
+      doc.setFont('times','italic')
+      doc.setFontSize(24)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text('Certificado de Registro Autoral Digital',105,71,{align:'center'})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(8.4)
+      doc.setTextColor(marrom[0],marrom[1],marrom[2])
+      doc.text(`Nº ${data.protocolo || '-'}`,105,79,{align:'center'})
+
+      doc.setDrawColor(dourado[0],dourado[1],dourado[2])
+      doc.setLineWidth(0.45)
+      doc.line(42,85,168,85)
+
+      // Corpo
+      doc.setFont('times','normal')
+      doc.setFontSize(9.2)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text('CONCEDEMOS A',105,96,{align:'center'})
+
+      doc.setFont('times','bold')
+      doc.setFontSize(12.6)
+      doc.text(textoSeguro(data.autores, data.nome || '-'),105,107,{align:'center', maxWidth:160})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(11)
+      doc.text(`Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,105,120,{align:'center', maxWidth:170})
+      doc.text(`Tipo de obra: ${textoSeguro(data.tipo)}`,105,132,{align:'center', maxWidth:170})
+      doc.text(`Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,105,144,{align:'center', maxWidth:170})
+
+      // Participações
+      doc.setFont('times','bold')
+      doc.setFontSize(9.2)
+      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.text('Participação Autoral',105,158,{align:'center'})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(8.4)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text(doc.splitTextToSize(participacaoTexto(data.participacao_autoral),150),105,164,{align:'center'})
+
+      doc.setFont('times','bold')
+      doc.setFontSize(9.2)
+      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.text('Participação Patrimonial',105,180,{align:'center'})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(8.4)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text(doc.splitTextToSize(participacaoTexto(data.participacao_patrimonial),150),105,186,{align:'center'})
+
+      // Texto legal
+      const textoLegal1 =
+        'O presente certificado comprova que a obra informada foi submetida à plataforma Registrar Agora, gerando protocolo único, data de registro e hash criptográfico SHA-256 para comprovação digital de anterioridade autoral.'
+
+      const textoLegal2 =
+        'Quaisquer inconsistências quanto à autoria, titularidade ou informações declaradas são de exclusiva responsabilidade do declarante.'
+
+      doc.setFont('times','normal')
+      doc.setFontSize(8.1)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text(doc.splitTextToSize(textoLegal1,168),105,205,{align:'center'})
+      doc.text(doc.splitTextToSize(textoLegal2,168),105,218,{align:'center'})
+
+      const dataRegistro = data.criado_em
+        ? new Date(data.criado_em).toLocaleString('pt-BR')
+        : new Date().toLocaleString('pt-BR')
+
+      doc.setFont('times','normal')
+      doc.setFontSize(9)
+      doc.text(`Campos dos Goytacazes - RJ, ${dataRegistro}`,105,230,{align:'center'})
+
+      // Carimbo à esquerda
+      try{
+        const carimbo = await imagemParaBase64('carimbo-registrar-agora.png')
+        doc.addImage(carimbo,'PNG',34,236,40,32)
+      }catch(e){
+        doc.setDrawColor(150,150,150)
+        doc.circle(54,252,15,'S')
+        doc.setFont('times','bold')
+        doc.setFontSize(6.5)
+        doc.setTextColor(110,110,110)
+        doc.text('REGISTRAR',54,250,{align:'center'})
+        doc.text('AGORA',54,255,{align:'center'})
+      }
+
+      // Hash ao centro
+      doc.setFont('times','bold')
+      doc.setFontSize(9)
+      doc.setTextColor(grafite[0],grafite[1],grafite[2])
+      doc.text('Hash SHA-256',105,241,{align:'center'})
+
+      doc.setFont('courier','normal')
+      doc.setFontSize(5.9)
+      doc.setTextColor(65,65,65)
+      doc.text(doc.splitTextToSize(data.hash_sha256 || '-',58),105,249,{align:'center'})
+
+      // QR à direita
+      try{
+        const qrUrl =
+          'https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&margin=60&color=120-78-22&bgcolor=248-243-229&data=' +
+          encodeURIComponent(linkValidacao)
+
+        const qrBase64 = await imagemParaBase64(qrUrl)
+
+        // QR marrom com fundo creme igual ao papel do certificado
+        doc.addImage(qrBase64,'PNG',141,239,28,28,undefined,'NONE')
+
+        doc.setFont('helvetica','normal')
+        doc.setFontSize(5.5)
+        doc.setTextColor(marrom[0],marrom[1],marrom[2])
+        doc.text('Escaneie para validar',155,272,{align:'center'})
+      }catch(e){
+        doc.setFontSize(8)
+        doc.text('QR Code indisponível',155,258,{align:'center'})
+      }
+
+      // Validação pública dentro da moldura, sem embolar no rodapé
+      doc.setFont('times','normal')
+      doc.setFontSize(5.2)
+      doc.setTextColor(marrom[0],marrom[1],marrom[2])
+      doc.setFontSize(5.5)
+      doc.text(
+        `Protocolo verificável via QR Code`,
+        105,
+        260,
+        {align:'center'}
+      )
+
+      // Rodapé institucional reposicionado
+      // Removida a caixa de fundo que estava passando por cima do QR Code
+
+      doc.setFont('times','bold')
+      doc.setFontSize(7.2)
+      doc.setTextColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+      doc.text('REGISTRAR AGORA',105,267,{align:'center'})
+
+      doc.setFont('times','normal')
+      doc.setFontSize(5.4)
+      doc.setTextColor(marrom[0],marrom[1],marrom[2])
+      doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,270,{align:'center'})
+      doc.text('CNPJ: 33.705.089/0001-40',105,273,{align:'center'})
+
+      doc.save(`certificado-${data.protocolo}.pdf`)
+    }
+
+    async function verificarRegistro(protocoloManual = null){
+      const protocolo =
+        protocoloManual ||
+        document.getElementById('protocolo').value.trim()
+
+      const resultado = document.getElementById('resultado')
+
+      if(!protocolo){
+        alert('Digite um protocolo')
+        return
+      }
+
+      document.getElementById('protocolo').value = protocolo
+
+      const { data, error } = await supabaseClient
+        .from('registros')
+        .select('*')
+        .eq('protocolo', protocolo)
+        .single()
+
+      if(error || !data){
+        resultado.classList.remove('hidden')
+        resultado.innerHTML = `
+          <h2 class="text-2xl font-bold text-red-400">Registro não encontrado</h2>
+          <p class="mt-4 text-gray-400">Verifique se o protocolo foi digitado corretamente.</p>
+        `
+        return
+      }
+
+      registroAtual = data
+
+      const respostaPagamento = await fetch(
+        '/.netlify/functions/verificar-pagamento?protocolo=' + protocolo
+      )
+
+      const pagamento = await respostaPagamento.json()
+      const statusPagamento = pagamento.status || 'PENDING'
+
+      // MODO TESTE TEMPORÁRIO
+      const pagamentoTexto = 'MODO TESTE'
+      const pagamentoClasse = 'text-green-400'
+
+      const botaoCertificado = `
+        <button onclick="baixarCertificado()"
+          class="mt-8 bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-2xl">
+          Baixar Certificado PDF
+        </button>
+      `
+
+      resultado.classList.remove('hidden')
+
+      resultado.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-4 h-4 rounded-full bg-green-400"></div>
+          <h2 class="text-3xl font-bold text-green-400">Registro encontrado</h2>
+        </div>
+
+        <div class="mt-8 space-y-4 text-gray-300">
+          <p><strong>Protocolo:</strong> ${data.protocolo}</p>
+          <p><strong>Autor(es):</strong> ${data.autores || data.nome}</p>
+          <p><strong>Participação autoral:</strong> ${data.participacao_autoral || '100% dos direitos informados no registro'}</p>
+          <p><strong>Titular(es):</strong> ${data.titular || '-'}</p>
+          <p><strong>Participação patrimonial:</strong> ${data.participacao_patrimonial || '100% dos direitos informados no registro'}</p>
+          <p><strong>CPF:</strong> ${data.cpf || '-'}</p>
+          <p><strong>Nome artístico:</strong> ${data.nome_artistico || '-'}</p>
+          <p><strong>Título da obra:</strong> ${data.titulo}</p>
+          <p><strong>Tipo:</strong> ${data.tipo}</p>
+
+          <p>
+            <strong>Status do pagamento:</strong>
+            <span class="${pagamentoClasse} font-bold">${pagamentoTexto}</span>
+          </p>
+
+          <p><strong>Data do registro:</strong> ${new Date(data.criado_em).toLocaleString('pt-BR')}</p>
+
+          <div class="pt-6 border-t border-white/10">
+            <p class="font-semibold mb-2">Hash SHA-256</p>
+            <p class="break-all text-sm text-green-300">${data.hash_sha256}</p>
+          </div>
+
+          ${botaoCertificado}
+        </div>
+      `
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    const protocoloURL = params.get('protocolo')
+
+    if(protocoloURL){
+      verificarRegistro(protocoloURL)
+    }
+  </script>
+
+</body>
+</html>
