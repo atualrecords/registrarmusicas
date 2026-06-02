@@ -295,7 +295,13 @@
       doc.setFont('times','normal')
       doc.setFontSize(5.2)
       doc.setTextColor(marrom[0],marrom[1],marrom[2])
-      doc.text(`Validação pública: ${linkValidacao}`,105,270,{align:'center', maxWidth:150})
+      doc.setFontSize(5.5)
+      doc.text(
+        `Protocolo verificável via QR Code`,
+        105,
+        267,
+        {align:'center'}
+      )
 
       // Rodapé institucional reposicionado
       doc.setFillColor(creme[0],creme[1],creme[2])
