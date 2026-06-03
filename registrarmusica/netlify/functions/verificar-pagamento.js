@@ -2,7 +2,15 @@ exports.handler = async function(event) {
   try {
     const protocolo = event.queryStringParameters?.protocolo
 
-    if(!protocolo){
+    const transaction_nsu =
+      event.queryStringParameters?.transaction_nsu || null
+
+    const slug =
+      event.queryStringParameters?.slug ||
+      event.queryStringParameters?.invoice_slug ||
+      null
+
+    if (!protocolo) {
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -25,7 +33,7 @@ exports.handler = async function(event) {
     const registros = await supabaseResponse.json()
     const registro = registros?.[0]
 
-    if(!registro){
+    if (!registro) {
       return {
         statusCode: 404,
         body: JSON.stringify({
@@ -35,109 +43,77 @@ exports.handler = async function(event) {
       }
     }
 
-    const pagbankId = registro.pagbank_id
-
-    if(!pagbankId){
+    if (registro.status_pagamento === 'pago') {
       return {
         statusCode: 200,
         body: JSON.stringify({
-          status: 'PENDING',
-          detalhe: 'Registro ainda não possui pagbank_id'
+          status: 'PAID',
+          origem: 'supabase'
         })
       }
     }
 
-    const checkoutResponse = await fetch(
-      `https://api.pagseguro.com/checkouts/${pagbankId}`,
+    if (!transaction_nsu || !slug) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          status: 'PENDING',
+          detalhe: 'Aguardando confirmação da InfinitePay'
+        })
+      }
+    }
+
+    const handle = process.env.INFINITEPAY_HANDLE || 'eval-da-2c1'
+
+    const checkPayload = {
+      handle: handle,
+      order_nsu: protocolo,
+      transaction_nsu: transaction_nsu,
+      slug: slug
+    }
+
+    const checkResponse = await fetch(
+      'https://api.checkout.infinitepay.io/payment_check',
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
+          'Content-Type': 'application/json',
           Accept: 'application/json'
-        }
+        },
+        body: JSON.stringify(checkPayload)
       }
     )
 
-    const checkoutTexto = await checkoutResponse.text()
+    const checkTexto = await checkResponse.text()
 
-    let checkout = {}
+    let check = {}
 
     try {
-      checkout = JSON.parse(checkoutTexto)
+      check = JSON.parse(checkTexto)
     } catch {
-      checkout = { raw: checkoutTexto }
+      check = { raw: checkTexto }
     }
 
-    if(!checkoutResponse.ok){
+    if (!checkResponse.ok) {
       return {
-        statusCode: checkoutResponse.status,
+        statusCode: checkResponse.status,
         body: JSON.stringify({
-          erro: 'Erro ao consultar checkout',
-          detalhe: checkout,
+          erro: 'Erro ao consultar pagamento InfinitePay',
+          detalhe: check,
           status: 'PENDING'
         })
       }
     }
 
-    const orderId = checkout?.orders?.[0]?.id
+    const pago =
+      check.success === true &&
+      (
+        check.paid === true ||
+        Number(check.paid_amount || 0) > 0
+      )
 
-    if(!orderId){
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          status: 'PENDING',
-          detalhe: checkout
-        })
-      }
-    }
-
-    const orderResponse = await fetch(
-      `https://api.pagseguro.com/orders/${orderId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${process.env.PAGBANK_TOKEN}`,
-          Accept: 'application/json'
-        }
-      }
-    )
-
-    const orderTexto = await orderResponse.text()
-
-    let order = {}
-
-    try {
-      order = JSON.parse(orderTexto)
-    } catch {
-      order = { raw: orderTexto }
-    }
-
-    if(!orderResponse.ok){
-      return {
-        statusCode: orderResponse.status,
-        body: JSON.stringify({
-          erro: 'Erro ao consultar pedido',
-          checkout,
-          detalhe: order,
-          status: 'PENDING'
-        })
-      }
-    }
-
-    const charges = order?.charges || []
-
-    let statusFinal = 'PENDING'
-
-    const algumPagamentoAprovado = charges.some(charge =>
-      charge.status === 'PAID'
-    )
-
-    if(algumPagamentoAprovado){
-      statusFinal = 'PAID'
-    }
-
-    if(statusFinal === 'PAID'){
-      await fetch(
+    if (pago) {
+      const atualizarResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/registros?protocolo=eq.${encodeURIComponent(protocolo)}`,
         {
           method: 'PATCH',
@@ -148,22 +124,35 @@ exports.handler = async function(event) {
             Prefer: 'return=minimal'
           },
           body: JSON.stringify({
-            status_pagamento: 'pago'
+            status_pagamento: 'pago',
+            pagbank_id: slug || transaction_nsu || protocolo
           })
         }
       )
+
+      if (!atualizarResponse.ok) {
+        const erroAtualizar = await atualizarResponse.text()
+
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            erro: 'Pagamento aprovado, mas erro ao atualizar Supabase',
+            detalhe: erroAtualizar,
+            status: 'PENDING'
+          })
+        }
+      }
     }
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        status: statusFinal,
-        checkout,
-        order
+        status: pago ? 'PAID' : 'PENDING',
+        infinitepay: check
       })
     }
 
-  } catch(error) {
+  } catch (error) {
     return {
       statusCode: 500,
       body: JSON.stringify({
