@@ -3,136 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Registrar Música</title>
-
+  <title>Registrar Agora | Registro Autoral Digital</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    body{ background:#050505; }
-
-    .glow{
-      background: radial-gradient(circle at center, rgba(34,197,94,0.15), transparent 70%);
+    body{
+      background:
+        radial-gradient(circle at top, rgba(200,162,74,0.16), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(92,224,0,0.08), transparent 34%),
+        #050505;
     }
-
+    .gold-text{ color:#C8A24A; }
+    .green-text{ color:#5CE000; }
+    .gold-border{ border-color:rgba(200,162,74,0.35); }
     .glass{
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
-      border:1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(14px);
+      border:1px solid rgba(200,162,74,0.18);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.35);
+    }
+    .hero-logo{ filter: drop-shadow(0 0 24px rgba(200,162,74,0.22)); }
+    .soft-line{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(200,162,74,.55), transparent);
     }
   </style>
 </head>
 
 <body class="text-white overflow-x-hidden">
 
-  <section class="relative min-h-screen flex items-center justify-center px-6">
-    <div class="absolute inset-0 glow"></div>
+  <header class="absolute top-0 left-0 right-0 z-20 px-6 py-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="logo-registrar-agora-branca.png" alt="Registrar Agora" class="w-28 md:w-36">
+      </a>
 
-    <div class="relative z-10 max-w-5xl text-center">
+      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <a href="#como-funciona" class="hover:text-white transition">Como funciona</a>
+        <a href="#seguranca" class="hover:text-white transition">Segurança</a>
+        <a href="verificar.html" class="hover:text-white transition">Verificar certificado</a>
+      </nav>
+    </div>
+  </header>
 
-      <span class="text-green-400 uppercase tracking-[4px] text-sm">
-        Prova Digital de Autoria
+  <section class="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+    <div class="relative z-10 max-w-6xl mx-auto text-center">
+
+      <img
+        src="logo-registrar-agora-branca.png"
+        alt="Registrar Agora - Registro Autoral Digital"
+        class="hero-logo mx-auto w-64 md:w-[420px] mb-6"
+      >
+
+      <div class="soft-line max-w-xl mx-auto mb-8"></div>
+
+      <span class="gold-text uppercase tracking-[5px] text-xs md:text-sm">
+        Registro Autoral Digital
       </span>
 
-      <h1 class="mt-6 text-5xl md:text-7xl font-bold leading-tight">
-        Proteja sua música com
-        <span class="text-green-400">tecnologia criptográfica</span>
+      <h1 class="mt-6 text-4xl md:text-7xl font-bold leading-tight">
+        Proteja sua obra com
+        <span class="green-text">prova digital de autoria</span>
       </h1>
 
-      <p class="mt-8 text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-        Registro online com hash SHA-256, timestamp digital e certificado verificável
-        para comprovação de anterioridade autoral.
+      <p class="mt-8 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        Registre músicas, letras, poesias, personagens, fotografias e outras obras com hash SHA-256,
+        data de anterioridade e certificado digital verificável por QR Code.
       </p>
 
-      <div class="mt-12 flex flex-col md:flex-row gap-4 justify-center">
-
+      <div class="mt-10 flex flex-col md:flex-row gap-4 justify-center">
         <a href="registrar.html"
-           class="bg-green-500 hover:bg-green-400 transition text-black font-bold px-8 py-4 rounded-2xl">
-          Registrar Música
+           class="bg-[#C8A24A] hover:bg-[#d9b45b] transition text-black font-bold px-9 py-4 rounded-2xl shadow-lg shadow-black/30">
+          Fazer meu Registro Autoral
         </a>
 
         <a href="verificar.html"
-           class="border border-white/20 hover:border-green-400 transition px-8 py-4 rounded-2xl">
+           class="border gold-border hover:border-[#C8A24A] transition px-9 py-4 rounded-2xl">
           Verificar Certificado
         </a>
-
       </div>
 
+      <p class="mt-7 text-sm text-gray-500">
+        Uma solução Registrar Agora • Uma empresa Atual Records
+      </p>
     </div>
   </section>
 
-  <section class="px-6 py-24">
+  <section id="como-funciona" class="px-6 py-24">
     <div class="max-w-6xl mx-auto">
       <div class="text-center">
-        <h2 class="text-4xl font-bold">Como funciona</h2>
-        <p class="mt-4 text-gray-400">Processo rápido, seguro e automatizado.</p>
+        <span class="gold-text uppercase tracking-[4px] text-xs">Processo simples</span>
+        <h2 class="mt-4 text-4xl font-bold">Como funciona</h2>
+        <p class="mt-4 text-gray-400">Registro online, pagamento seguro e certificado liberado automaticamente.</p>
       </div>
 
       <div class="grid md:grid-cols-3 gap-8 mt-16">
         <div class="glass rounded-3xl p-8">
-          <div class="text-green-400 text-4xl">01</div>
+          <div class="gold-text text-4xl font-bold">01</div>
           <h3 class="mt-6 text-2xl font-semibold">Envie sua obra</h3>
           <p class="mt-4 text-gray-400 leading-relaxed">
-            Faça upload da música, letra, poesia ou composição em poucos minutos.
+            Preencha os dados de autoria, titularidade e envie o arquivo que deseja registrar.
           </p>
         </div>
 
         <div class="glass rounded-3xl p-8">
-          <div class="text-green-400 text-4xl">02</div>
+          <div class="gold-text text-4xl font-bold">02</div>
           <h3 class="mt-6 text-2xl font-semibold">Geramos a prova digital</h3>
           <p class="mt-4 text-gray-400 leading-relaxed">
-            O sistema cria hash SHA-256 e timestamp para comprovação de anterioridade.
+            O sistema cria hash SHA-256, protocolo único e registro de anterioridade digital.
           </p>
         </div>
 
         <div class="glass rounded-3xl p-8">
-          <div class="text-green-400 text-4xl">03</div>
+          <div class="gold-text text-4xl font-bold">03</div>
           <h3 class="mt-6 text-2xl font-semibold">Receba o certificado</h3>
           <p class="mt-4 text-gray-400 leading-relaxed">
-            Seu certificado digital é liberado automaticamente com QR Code verificável.
+            Após o pagamento, o certificado em PDF é liberado com QR Code para verificação pública.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="px-6 py-24">
+  <section id="seguranca" class="px-6 py-24">
     <div class="max-w-6xl mx-auto">
-      <div class="glass rounded-[40px] p-12">
+      <div class="glass rounded-[40px] p-10 md:p-14">
         <div class="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <span class="text-green-400 uppercase tracking-[3px] text-sm">
+            <span class="gold-text uppercase tracking-[3px] text-sm">
               Segurança e autenticidade
             </span>
 
             <h2 class="mt-6 text-4xl font-bold leading-tight">
-              Tecnologia desenvolvida para proteger obras autorais.
+              Um certificado com identidade visual profissional e validação pública.
             </h2>
+
+            <p class="mt-6 text-gray-400 leading-relaxed">
+              Cada registro recebe protocolo exclusivo, hash criptográfico e página pública de verificação.
+              O QR Code do certificado direciona para a validação online da obra registrada.
+            </p>
           </div>
 
           <div class="space-y-6">
-            <div class="flex gap-4"><div class="text-green-400">✓</div><div>Hash SHA-256 criptográfica</div></div>
-            <div class="flex gap-4"><div class="text-green-400">✓</div><div>Timestamp digital</div></div>
-            <div class="flex gap-4"><div class="text-green-400">✓</div><div>QR Code verificável</div></div>
-            <div class="flex gap-4"><div class="text-green-400">✓</div><div>Certificado digital em PDF</div></div>
-            <div class="flex gap-4"><div class="text-green-400">✓</div><div>Validação pública online</div></div>
+            <div class="flex gap-4"><div class="gold-text font-bold">✓</div><div>Hash SHA-256 criptográfico</div></div>
+            <div class="flex gap-4"><div class="gold-text font-bold">✓</div><div>Protocolo único de registro</div></div>
+            <div class="flex gap-4"><div class="gold-text font-bold">✓</div><div>QR Code verificável</div></div>
+            <div class="flex gap-4"><div class="gold-text font-bold">✓</div><div>Certificado digital em PDF</div></div>
+            <div class="flex gap-4"><div class="gold-text font-bold">✓</div><div>Validação pública online</div></div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 py-20">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl font-bold">Comece seu registro agora</h2>
+      <p class="mt-4 text-gray-400">
+        Valor do registro: <span class="gold-text font-bold">R$ 37,50</span>
+      </p>
+
+      <div class="mt-8">
+        <a href="registrar.html"
+           class="inline-block bg-[#C8A24A] hover:bg-[#d9b45b] transition text-black font-bold px-10 py-4 rounded-2xl">
+          Fazer meu Registro Autoral
+        </a>
       </div>
     </div>
   </section>
 
   <footer class="border-t border-white/10 py-10 px-6">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-6">
-      <div>
-        <h3 class="text-2xl font-bold">Registrar Música</h3>
-        <p class="mt-2 text-gray-500">
-          Plataforma digital de prova de anterioridade autoral.
-        </p>
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-6 items-center">
+      <div class="flex items-center gap-4">
+        <img src="logo-registrar-agora-branca.png" alt="Registrar Agora" class="w-28">
+        <div>
+          <h3 class="text-xl font-bold">Registrar Agora</h3>
+          <p class="text-gray-500 text-sm">
+            Registro Autoral Digital • Uma empresa Atual Records
+          </p>
+        </div>
       </div>
 
       <div class="text-gray-500 text-sm">
-        © 2026 Registrar Música — Todos os direitos reservados.
+        © 2026 Registrar Agora — Todos os direitos reservados.
       </div>
     </div>
   </footer>
