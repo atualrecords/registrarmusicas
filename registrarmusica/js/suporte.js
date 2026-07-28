@@ -1,176 +1,97 @@
-// ==========================================================
-// REGISTRAR AGORA
-// Envio de solicitações de suporte
-// ==========================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("supportForm");
+  const button = document.getElementById("submitButton");
+  const box = document.getElementById("formMessage");
 
-document.addEventListener("DOMContentLoaded", function () {
-    const formulario = document.getElementById("supportForm");
-    const botaoEnviar = document.getElementById("submitButton");
-    const mensagemRetorno = document.getElementById("formMessage");
+  if (!form || !button || !box) {
+    console.error("Elementos do formulário de suporte não encontrados.");
+    return;
+  }
 
-    if (!formulario) {
-        console.error("Formulário de suporte não encontrado.");
-        return;
+  const showMessage = (type, text) => {
+    box.className = "rounded-xl p-4 text-sm border " + (
+      type === "success"
+        ? "bg-green-500/10 border-green-500/30 text-green-200"
+        : "bg-red-500/10 border-red-500/30 text-red-200"
+    );
+    box.innerHTML = text;
+    box.classList.remove("hidden");
+  };
+
+  const generateProtocol = () => {
+    const now = new Date();
+    const date =
+      now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0");
+
+    const random = crypto.getRandomValues(new Uint32Array(1))[0]
+      .toString()
+      .slice(-6)
+      .padStart(6, "0");
+
+    return `SUP-${date}-${random}`;
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    box.classList.add("hidden");
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
     }
 
-    function mostrarMensagem(tipo, conteudo) {
-        mensagemRetorno.classList.remove(
-            "hidden",
-            "bg-green-500/10",
-            "border-green-500/30",
-            "text-green-200",
-            "bg-red-500/10",
-            "border-red-500/30",
-            "text-red-200"
-        );
-
-        mensagemRetorno.classList.add(
-            "border",
-            "rounded-xl",
-            "p-4",
-            "text-sm"
-        );
-
-        if (tipo === "sucesso") {
-            mensagemRetorno.classList.add(
-                "bg-green-500/10",
-                "border-green-500/30",
-                "text-green-200"
-            );
-        } else {
-            mensagemRetorno.classList.add(
-                "bg-red-500/10",
-                "border-red-500/30",
-                "text-red-200"
-            );
-        }
-
-        mensagemRetorno.innerHTML = conteudo;
+    if (!window.supabaseClient) {
+      showMessage(
+        "error",
+        "A conexão com o sistema de suporte não foi carregada. Verifique o arquivo js/supabase.js."
+      );
+      return;
     }
 
-    function alterarCarregamento(ativo) {
-        botaoEnviar.disabled = ativo;
-        botaoEnviar.textContent = ativo
-            ? "Enviando solicitação..."
-            : "Enviar Solicitação";
+    const protocolo = generateProtocol();
+    const categoria = document.getElementById("categoria").value.trim();
+    const assuntoBase = document.getElementById("assunto").value.trim();
 
-        botaoEnviar.classList.toggle("opacity-60", ativo);
-        botaoEnviar.classList.toggle("cursor-not-allowed", ativo);
+    const payload = {
+      protocolo,
+      nome: document.getElementById("nome").value.trim(),
+      email: document.getElementById("email").value.trim().toLowerCase(),
+      telefone: document.getElementById("telefone").value.trim() || null,
+      assunto: categoria
+        ? `[${categoria}] ${assuntoBase}`.slice(0, 160)
+        : assuntoBase.slice(0, 160),
+      mensagem: document.getElementById("mensagem").value.trim(),
+      status: "Aberto"
+    };
+
+    button.disabled = true;
+    button.textContent = "Enviando...";
+
+    try {
+      const { error } = await window.supabaseClient
+        .from("support_tickets")
+        .insert([payload]);
+
+      if (error) throw error;
+
+      form.reset();
+      showMessage(
+        "success",
+        `<strong>Solicitação enviada com sucesso!</strong><br><br>
+         Seu protocolo é: <strong class="text-white">${protocolo}</strong>`
+      );
+    } catch (error) {
+      console.error("Erro ao enviar chamado:", error);
+      showMessage(
+        "error",
+        `Não foi possível enviar sua solicitação.<br><br>
+         <strong>Detalhe:</strong> ${error.message || "erro desconhecido"}`
+      );
+    } finally {
+      button.disabled = false;
+      button.textContent = "Enviar Solicitação";
     }
-
-    formulario.addEventListener("submit", async function (evento) {
-        evento.preventDefault();
-
-        mensagemRetorno.classList.add("hidden");
-
-        if (!formulario.checkValidity()) {
-            formulario.reportValidity();
-            return;
-        }
-
-        const nome = document.getElementById("nome").value.trim();
-        const email = document
-            .getElementById("email")
-            .value
-            .trim()
-            .toLowerCase();
-
-        const telefone = document
-            .getElementById("telefone")
-            .value
-            .trim();
-
-        const categoria = document
-            .getElementById("categoria")
-            .value
-            .trim();
-
-        const assuntoInformado = document
-            .getElementById("assunto")
-            .value
-            .trim();
-
-        const mensagem = document
-            .getElementById("mensagem")
-            .value
-            .trim();
-
-        if (nome.length < 2) {
-            mostrarMensagem(
-                "erro",
-                "Informe seu nome completo."
-            );
-            return;
-        }
-
-        if (assuntoInformado.length < 3) {
-            mostrarMensagem(
-                "erro",
-                "Informe um assunto com pelo menos 3 caracteres."
-            );
-            return;
-        }
-
-        if (mensagem.length < 10) {
-            mostrarMensagem(
-                "erro",
-                "Descreva o problema com pelo menos 10 caracteres."
-            );
-            return;
-        }
-
-        const protocolo = window.gerarProtocolo("SUP");
-
-        const assunto = categoria
-            ? `[${categoria}] ${assuntoInformado}`.slice(0, 160)
-            : assuntoInformado.slice(0, 160);
-
-        const chamado = {
-            protocolo: protocolo,
-            nome: nome,
-            email: email,
-            telefone: telefone || null,
-            assunto: assunto,
-            mensagem: mensagem,
-            status: "Aberto"
-        };
-
-        alterarCarregamento(true);
-
-        try {
-            const { error } = await window.supabase
-                .from("support_tickets")
-                .insert(chamado);
-
-            if (error) {
-                throw error;
-            }
-
-            formulario.reset();
-
-            mostrarMensagem(
-                "sucesso",
-                `
-                <strong>Solicitação enviada com sucesso!</strong>
-                <br><br>
-                Seu protocolo é:
-                <strong class="text-white">${protocolo}</strong>
-                <br><br>
-                Guarde esse número. Nossa equipe responderá pelo e-mail informado.
-                `
-            );
-        } catch (erro) {
-            console.error("Erro ao enviar solicitação:", erro);
-
-            mostrarMensagem(
-                "erro",
-                `
-                Não foi possível enviar sua solicitação neste momento.
-                Verifique os dados e tente novamente.
-                `
-            );
-        } finally {
-            alterarCarregamento(false);
-        }
-    });
+  });
 });
