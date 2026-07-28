@@ -1,97 +1,193 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registrar Agora | Registro Autoral Digital</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-html{scroll-behavior:smooth}
-body{background:#050505;color:#fff}
-.hero{background:
-linear-gradient(rgba(0,0,0,.82),rgba(0,0,0,.78)),
-url('fundo-registrar-agora.png') center/cover no-repeat}
-.glass{background:rgba(255,255,255,.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08)}
-.card:hover{transform:translateY(-6px)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Registrar Agora | Registro Autoral Digital</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body{
+      background:#050505;
+    header{background:rgba(0,0,0,.35);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);} 
+    }
+
+    .hero-bg{
+      background-image:
+        linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 42%, rgba(0,0,0,0.30) 100%),
+        url('fundo-registrar-agora.png');
+      background-size: cover;
+      background-position: 88% 0%;
+      background-repeat: no-repeat;
+    }
+
+    .glow{
+      background: radial-gradient(circle at 30% 55%, rgba(34,197,94,0.18), transparent 42%);
+    }
+
+    .glass{
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-logo{
+      filter: drop-shadow(0 0 26px rgba(255,255,255,0.12));
+    }
+  </style>
 </head>
-<body class="overflow-x-hidden">
-<header class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur border-b border-white/10">
-<div class="max-w-7xl mx-auto flex justify-between items-center p-5">
-<img src="logo-registrar-agora-branca.png" class="w-56">
-<nav class="hidden md:flex gap-8 text-gray-300">
-<a href="#como">Como funciona</a>
-<a href="#beneficios">Benefícios</a>
-<a href="#faq">FAQ</a>
-<a href="suporte.html">Suporte</a>
-<a href="verificar.html">Verificar</a>
-<a href="registrar.html" class="bg-green-500 px-5 py-2 rounded-xl font-bold">Registrar Obra</a>
-</nav>
-</div>
-</header>
 
-<section class="hero min-h-screen flex items-center">
-<div class="max-w-6xl mx-auto text-center px-6 pt-32">
-<img src="logo-registrar-agora-branca.png" class="mx-auto w-96 md:w-[520px] mb-10">
-<h1 class="text-5xl md:text-7xl font-bold">Proteja sua criação com <span class="text-green-400">prova internacional de autoria</span></h1>
-<p class="mt-8 text-xl text-gray-300 max-w-3xl mx-auto">Registre músicas, livros, fotografias, softwares, roteiros, logotipos e qualquer criação intelectual com hash SHA‑256, timestamp digital e certificado verificável.</p>
-<div class="flex flex-wrap justify-center gap-4 mt-10">
-<a href="registrar.html" class="bg-green-500 px-8 py-4 rounded-2xl font-bold">Registrar Agora</a>
-<a href="verificar.html" class="border border-white/20 px-8 py-4 rounded-2xl">Verificar Certificado</a>
-</div>
-<div class="grid md:grid-cols-4 gap-5 mt-16">
-<div class="glass rounded-2xl p-5">SHA‑256</div>
-<div class="glass rounded-2xl p-5">Timestamp</div>
-<div class="glass rounded-2xl p-5">QR Code</div>
-<div class="glass rounded-2xl p-5">Convenção de Berna</div>
-</div>
-</div>
-</section>
+<body class="text-white overflow-x-hidden">
 
-<section id="como" class="py-24 px-6">
-<div class="max-w-6xl mx-auto">
-<h2 class="text-4xl font-bold text-center mb-14">Como funciona</h2>
-<div class="grid md:grid-cols-3 gap-8">
-<div class="glass card rounded-3xl p-8"><div class="text-green-400 text-5xl font-bold">01</div><h3 class="text-2xl font-bold mt-5">Envie sua obra</h3><p class="mt-3 text-gray-300">Preencha o formulário e faça o upload.</p></div>
-<div class="glass card rounded-3xl p-8"><div class="text-green-400 text-5xl font-bold">02</div><h3 class="text-2xl font-bold mt-5">Registro</h3><p class="mt-3 text-gray-300">Geramos hash, protocolo e prova de anterioridade.</p></div>
-<div class="glass card rounded-3xl p-8"><div class="text-green-400 text-5xl font-bold">03</div><h3 class="text-2xl font-bold mt-5">Certificado</h3><p class="mt-3 text-gray-300">Baixe seu certificado em PDF com QR Code.</p></div>
-</div>
-</div>
-</section>
+  <header class="fixed top-0 left-0 right-0 z-20 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-end">
+      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <a href="#como-funciona" class="hover:text-white transition">Como funciona</a>
+        <a href="#seguranca" class="hover:text-white transition">Segurança</a>
+        <a href="verificar.html" class="hover:text-white transition">Verificar certificado</a>
+        <a href="suporte.html" class="hover:text-white transition">Suporte</a>
+        <a href="registrar.html" class="bg-green-500 hover:bg-green-400 text-white px-5 py-2 rounded-xl font-semibold transition">Registrar Obra</a>
+      </nav>
+    </div>
+  </header>
 
-<section id="beneficios" class="py-24 px-6 bg-black/30">
-<div class="max-w-6xl mx-auto">
-<h2 class="text-4xl font-bold text-center mb-14">Por que escolher o Registrar Agora?</h2>
-<div class="grid md:grid-cols-3 gap-6">
-<div class="glass rounded-2xl p-6">✔ Registro digital seguro</div>
-<div class="glass rounded-2xl p-6">✔ Validação pública</div>
-<div class="glass rounded-2xl p-6">✔ Certificado PDF</div>
-<div class="glass rounded-2xl p-6">✔ Suporte especializado</div>
-<div class="glass rounded-2xl p-6">✔ Compatível internacionalmente</div>
-<div class="glass rounded-2xl p-6">✔ Processo 100% online</div>
-</div>
-</div>
-</section>
+  <section class="hero-bg relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+    <div class="absolute inset-0 glow"></div>
+    <div class="absolute inset-0 bg-black/10"></div>
 
-<section id="faq" class="py-24 px-6">
-<div class="max-w-4xl mx-auto">
-<h2 class="text-4xl font-bold text-center mb-12">Perguntas Frequentes</h2>
-<div class="space-y-4">
-<details class="glass rounded-xl p-5"><summary class="cursor-pointer font-bold">É obrigatório registrar?</summary><p class="mt-3 text-gray-300">Não, mas fortalece a prova de autoria.</p></details>
-<details class="glass rounded-xl p-5"><summary class="cursor-pointer font-bold">Vale internacionalmente?</summary><p class="mt-3 text-gray-300">Sim, como prova de anterioridade, respeitando a legislação aplicável.</p></details>
-<details class="glass rounded-xl p-5"><summary class="cursor-pointer font-bold">Posso registrar antes de publicar?</summary><p class="mt-3 text-gray-300">Sim, essa é uma prática recomendada.</p></details>
-</div>
-</div>
-</section>
+    <div class="relative z-10 max-w-6xl mx-auto text-center">
 
-<footer class="border-t border-white/10 py-14">
-<div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 px-6">
-<div><img src="logo-registrar-agora-branca.png" class="w-44"><p class="mt-4 text-gray-400">Registro Autoral Digital</p></div>
-<div><h4 class="font-bold">Navegação</h4><p class="text-gray-400 mt-3">Início<br>Registrar<br>Verificar</p></div>
-<div><h4 class="font-bold">Contato</h4><p class="text-gray-400 mt-3">registrofacil@proton.me<br>WhatsApp (22) 99843‑1479</p></div>
-<div><h4 class="font-bold">Empresa</h4><p class="text-gray-400 mt-3">CNPJ 33.705.089/0001-40<br>Campos dos Goytacazes/RJ</p></div>
-</div>
-<div class="text-center text-gray-500 mt-10">© 2026 Registrar Agora • SHA‑256 • Timestamp • Verificação Pública</div>
-</footer>
+      <img
+        src="logo-registrar-agora-branca.png"
+        alt="Registrar Agora - Registro Autoral Digital"
+        class="hero-logo mx-auto w-72 md:w-[420px] mb-14 mt-16"
+      >
+
+      <span class="text-green-400 uppercase tracking-[5px] text-xs md:text-sm">
+        Prova Digital de Autoria
+      </span>
+
+      <h1 class="mt-6 text-3xl md:text-6xl font-bold leading-tight">
+        Proteja sua obra com
+        <span class="text-green-400">tecnologia criptográfica</span>
+      </h1>
+
+      <p class="mt-8 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        Registre músicas, letras, poesias, personagens, fotografias e outras obras com hash SHA-256,
+        timestamp digital e certificado verificável por QR Code.
+      </p>
+
+      <div class="mt-10 flex flex-col md:flex-row gap-4 justify-center">
+        <a href="registrar.html"
+           class="bg-green-500 hover:bg-green-400 transition text-white font-bold px-9 py-4 rounded-2xl shadow-lg shadow-black/30">
+          Fazer meu Registro Autoral
+        </a>
+
+        <a href="verificar.html"
+           class="border border-white/20 hover:border-green-400 transition px-9 py-4 rounded-2xl">
+          Verificar Certificado
+        </a>
+      </div>
+
+      <p class="mt-7 text-sm text-gray-500">
+        Registrar Agora • Registro Autoral Digital • Uma empresa Atual Records
+      </p>
+
+    </div>
+  </section>
+
+  <section id="como-funciona" class="px-6 py-24">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center">
+        <span class="text-green-400 uppercase tracking-[4px] text-xs">Processo simples</span>
+        <h2 class="mt-4 text-4xl font-bold">Como funciona</h2>
+        <p class="mt-4 text-gray-400">Registro online, pagamento seguro e certificado liberado automaticamente.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 mt-16">
+        <div class="glass rounded-3xl p-8">
+          <div class="text-green-400 text-4xl font-bold">01</div>
+          <h3 class="mt-6 text-2xl font-semibold">Envie sua obra</h3>
+          <p class="mt-4 text-gray-400 leading-relaxed">
+            Preencha os dados de autoria, titularidade e envie o arquivo que deseja registrar.
+          </p>
+        </div>
+
+        <div class="glass rounded-3xl p-8">
+          <div class="text-green-400 text-4xl font-bold">02</div>
+          <h3 class="mt-6 text-2xl font-semibold">Geramos a prova digital</h3>
+          <p class="mt-4 text-gray-400 leading-relaxed">
+            O sistema cria hash SHA-256, protocolo único e registro de anterioridade digital.
+          </p>
+        </div>
+
+        <div class="glass rounded-3xl p-8">
+          <div class="text-green-400 text-4xl font-bold">03</div>
+          <h3 class="mt-6 text-2xl font-semibold">Receba o certificado</h3>
+          <p class="mt-4 text-gray-400 leading-relaxed">
+            Após o pagamento, o certificado em PDF é liberado com QR Code para verificação pública.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="seguranca" class="px-6 py-24">
+    <div class="max-w-6xl mx-auto">
+      <div class="glass rounded-[40px] p-10 md:p-14">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <span class="text-green-400 uppercase tracking-[3px] text-sm">
+              Segurança e autenticidade
+            </span>
+
+            <h2 class="mt-6 text-4xl font-bold leading-tight">
+              Um certificado com identidade visual profissional e validação pública.
+            </h2>
+
+            <p class="mt-6 text-gray-400 leading-relaxed">
+              Cada registro recebe protocolo exclusivo, hash criptográfico e página pública de verificação.
+              O QR Code do certificado direciona para a validação online da obra registrada.
+            </p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="flex gap-4"><div class="text-green-400 font-bold">✓</div><div>Hash SHA-256 criptográfico</div></div>
+            <div class="flex gap-4"><div class="text-green-400 font-bold">✓</div><div>Protocolo único de registro</div></div>
+            <div class="flex gap-4"><div class="text-green-400 font-bold">✓</div><div>QR Code verificável</div></div>
+            <div class="flex gap-4"><div class="text-green-400 font-bold">✓</div><div>Certificado digital em PDF</div></div>
+            <div class="flex gap-4"><div class="text-green-400 font-bold">✓</div><div>Validação pública online</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 py-20">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl font-bold">Comece seu registro agora</h2>
+      <p class="mt-4 text-gray-400">
+        Valor do registro: <span class="text-green-400 font-bold">R$ 37,50</span>
+      </p>
+
+      <div class="mt-8">
+        <a href="registrar.html"
+           class="inline-block bg-green-500 hover:bg-green-400 transition text-white font-bold px-10 py-4 rounded-2xl">
+          Fazer meu Registro Autoral
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/10 py-14 px-6 bg-black">
+<div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+<div><img src="logo-registrar-agora-branca.png" class="w-40 mb-4"><p class="text-gray-400 text-sm">Registro Autoral Digital</p><p class="text-gray-500 text-sm mt-4">Rua Barata Ribeiro<br>Parque Barão do Rio Branco<br>Campos dos Goytacazes - RJ</p><p class="text-gray-500 text-sm mt-3"><strong>CNPJ:</strong>33.705.089/0001-40</p></div>
+<div><h4 class="font-bold mb-3">Navegação</h4><ul class="space-y-2 text-gray-400 text-sm"><li><a href="index.html">Início</a></li><li><a href="registrar.html">Registrar Obra</a></li><li><a href="verificar.html">Verificar Certificado</a></li><li><a href="#como-funciona">Como funciona</a></li><li><a href="#seguranca">Segurança</a></li></ul></div>
+<div><h4 class="font-bold mb-3">Legal</h4><ul class="space-y-2 text-gray-400 text-sm"><li>Política de Privacidade</li><li>Termos de Uso</li><li>LGPD</li><li>Convenção de Berna</li></ul></div>
+<div><h4 class="font-bold mb-3">Suporte</h4><p class="text-gray-400 text-sm">atualrecordsorcamentos@gmail.com</p><p class="text-gray-400 text-sm mt-2">Segunda à Sexta<br>09h às 18h</p></div>
+</div><div class="max-w-6xl mx-auto border-t border-white/10 mt-10 pt-6 text-center text-gray-500 text-sm">© 2026 Registrar Agora — Todos os direitos reservados.<br>Tecnologia SHA-256 • Timestamp Digital • Verificação Pública</div></footer>
+
 </body>
 </html>
