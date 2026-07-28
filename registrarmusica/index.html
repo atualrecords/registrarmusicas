@@ -11,7 +11,6 @@
   <style>
     body{
       background:#050505;
-    header{background:rgba(0,0,0,.35);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);} 
     }
 
     .hero-bg{
@@ -19,7 +18,7 @@
         linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 42%, rgba(0,0,0,0.30) 100%),
         url('fundo-registrar-agora.png');
       background-size: cover;
-      background-position: 88% 0%;
+      background-position: 88% 18%;
       background-repeat: no-repeat;
     }
 
@@ -41,7 +40,7 @@
 
 <body class="text-white overflow-x-hidden">
 
-  <header class="fixed top-0 left-0 right-0 z-20 px-6 py-4">
+  <header class="fixed top-0 left-0 right-0 z-50 px-6 py-3 bg-black/35 backdrop-blur-xl border-b border-white/10">
     <div class="max-w-6xl mx-auto flex items-center justify-end">
       <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
         <a href="#como-funciona" class="hover:text-white transition">Como funciona</a>
@@ -53,23 +52,23 @@
     </div>
   </header>
 
-  <section class="hero-bg relative min-h-screen flex items-center justify-center px-6 pt-28 pb-16">
+  <section class="hero-bg relative min-h-screen flex items-center justify-center px-6 pt-40 pb-16">
     <div class="absolute inset-0 glow"></div>
-    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="absolute inset-0 bg-black/5"></div>
 
     <div class="relative z-10 max-w-6xl mx-auto text-center">
 
       <img
         src="logo-registrar-agora-branca.png"
         alt="Registrar Agora - Registro Autoral Digital"
-        class="hero-logo mx-auto w-72 md:w-[420px] mb-14 mt-16"
+        class="hero-logo mx-auto w-[260px] md:w-[600px] mt-24 mb-16"
       >
 
       <span class="text-green-400 uppercase tracking-[5px] text-xs md:text-sm">
         Prova Digital de Autoria
       </span>
 
-      <h1 class="mt-6 text-3xl md:text-6xl font-bold leading-tight">
+      <h1 class="mt-6 text-4xl md:text-6xl font-bold leading-tight">
         Proteja sua obra com
         <span class="text-green-400">tecnologia criptográfica</span>
       </h1>
