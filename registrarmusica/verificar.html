@@ -188,9 +188,15 @@
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
       doc.text('CONCEDEMOS A',105,96,{align:'center'})
 
+      // Em registros antigos, o CPF pode ter sido salvo junto ao nome do autor.
+      // Remove somente um CPF no final do campo autores para não duplicá-lo no certificado.
+      const autoresCertificado = textoSeguro(data.autores, data.nome || '-')
+        .replace(/\s+CPF\s*:?\s*\d{3}\.?\d{3}\.?\d{3}-?\d{2}\s*$/i, '')
+        .trim()
+
       doc.setFont('times','bold')
       doc.setFontSize(12.6)
-      doc.text(textoSeguro(data.autores, data.nome || '-'),105,107,{align:'center', maxWidth:160})
+      doc.text(autoresCertificado,105,107,{align:'center', maxWidth:160})
 
       doc.setFont('times','normal')
       doc.setFontSize(9.8)
