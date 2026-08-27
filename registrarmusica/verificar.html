@@ -193,10 +193,14 @@
       doc.text(textoSeguro(data.autores, data.nome || '-'),105,107,{align:'center', maxWidth:160})
 
       doc.setFont('times','normal')
+      doc.setFontSize(9.8)
+      doc.text(`CPF: ${textoSeguro(data.cpf)}`,105,114,{align:'center', maxWidth:160})
+
+      doc.setFont('times','normal')
       doc.setFontSize(11)
-      doc.text(`Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,105,120,{align:'center', maxWidth:170})
-      doc.text(`Tipo de obra: ${textoSeguro(data.tipo)}`,105,132,{align:'center', maxWidth:170})
-      doc.text(`Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,105,144,{align:'center', maxWidth:170})
+      doc.text(`Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,105,124,{align:'center', maxWidth:170})
+      doc.text(`Tipo de obra: ${textoSeguro(data.tipo)}`,105,136,{align:'center', maxWidth:170})
+      doc.text(`Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,105,148,{align:'center', maxWidth:170})
 
       // Participações
       doc.setFont('times','bold')
