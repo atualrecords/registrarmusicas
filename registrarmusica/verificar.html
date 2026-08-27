@@ -182,8 +182,20 @@
       doc.setLineWidth(0.45)
       doc.line(42,85,168,85)
 
-      // Corpo com posicionamento dinâmico para registros com muitos autores
+      // Corpo dinâmico
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
+
+      const autoresCertificado = textoSeguro(data.autores, data.nome || '-')
+        .replace(/\s+CPF\s*:?\s*\d{3}\.?\d{3}\.?\d{3}-?\d{2}\s*$/i, '')
+        .trim()
+
+      // Usa os separadores já existentes no cadastro para estimar a quantidade.
+      const listaAutores = autoresCertificado
+        .split(/\s+-\s+|;\s*|\n+/)
+        .map(v => v.trim())
+        .filter(Boolean)
+
+      const muitosAutores = listaAutores.length >= 5
 
       let y = 96
       doc.setFont('times','normal')
@@ -191,93 +203,73 @@
       doc.text('CONCEDEMOS A',105,y,{align:'center'})
       y += 7
 
-      // Em registros antigos, o CPF pode ter sido salvo junto ao nome do autor.
-      const autoresCertificado = textoSeguro(data.autores, data.nome || '-')
-        .replace(/\s+CPF\s*:?\s*\d{3}\.?\d{3}\.?\d{3}-?\d{2}\s*$/i, '')
-        .trim()
-
-      // Quanto mais conteúdo, menor a fonte, preservando a leitura.
-      const qtdAutoresAprox = autoresCertificado.split(/\s+-\s+|;/).filter(Boolean).length
-      const fonteAutores = qtdAutoresAprox >= 8 ? 9.2 : qtdAutoresAprox >= 5 ? 10.2 : 12.0
-
       doc.setFont('times','bold')
-      doc.setFontSize(fonteAutores)
-      const linhasAutores = doc.splitTextToSize(autoresCertificado,160)
+      doc.setFontSize(muitosAutores ? 8.7 : 11.5)
+      const linhasAutores = doc.splitTextToSize(autoresCertificado, muitosAutores ? 174 : 160)
       doc.text(linhasAutores,105,y,{align:'center'})
-      y += (linhasAutores.length * (fonteAutores * 0.38)) + 3
+      y += linhasAutores.length * (muitosAutores ? 3.6 : 4.6) + 3
 
       doc.setFont('times','normal')
-      doc.setFontSize(8.6)
-      const linhasCpf = doc.splitTextToSize(`CPF: ${textoSeguro(data.cpf)}`,160)
+      doc.setFontSize(muitosAutores ? 7.2 : 8.6)
+      const linhasCpf = doc.splitTextToSize(`CPF: ${textoSeguro(data.cpf)}`,174)
       doc.text(linhasCpf,105,y,{align:'center'})
-      y += (linhasCpf.length * 3.5) + 4
+      y += linhasCpf.length * (muitosAutores ? 3.0 : 3.6) + 4
 
       doc.setFont('times','normal')
-      doc.setFontSize(9.4)
+      doc.setFontSize(muitosAutores ? 8.4 : 9.4)
 
       const linhasObra = doc.splitTextToSize(
-        `Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,170
+        `Autor(es) legítimo(s) da obra: ${textoSeguro(data.titulo)}`,174
       )
       doc.text(linhasObra,105,y,{align:'center'})
-      y += (linhasObra.length * 4.0) + 3
+      y += linhasObra.length * 3.6 + 3
 
-      const linhasTipo = doc.splitTextToSize(`Tipo de obra: ${textoSeguro(data.tipo)}`,170)
+      const linhasTipo = doc.splitTextToSize(`Tipo de obra: ${textoSeguro(data.tipo)}`,174)
       doc.text(linhasTipo,105,y,{align:'center'})
-      y += (linhasTipo.length * 4.0) + 3
+      y += linhasTipo.length * 3.6 + 3
 
       const linhasTitular = doc.splitTextToSize(
-        `Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,170
+        `Titular(es): ${textoSeguro(data.titular, data.nome || '-')}`,174
       )
       doc.text(linhasTitular,105,y,{align:'center'})
-      y += (linhasTitular.length * 4.0) + 5
+      y += linhasTitular.length * (muitosAutores ? 3.1 : 3.8) + 5
 
-      // Participações também passam a ocupar somente o espaço necessário.
-      const participacaoAutoral = doc.splitTextToSize(
-        participacaoTexto(data.participacao_autoral),150
-      )
-      const participacaoPatrimonial = doc.splitTextToSize(
-        participacaoTexto(data.participacao_patrimonial),150
-      )
+      if (muitosAutores) {
+        // Em certificados extensos, a página principal não tenta espremer
+        // dezenas de linhas de percentuais. O detalhamento vai para a página 2.
+        doc.setFont('times','bold')
+        doc.setFontSize(8.6)
+        doc.text('Participações autorais e patrimoniais',105,y,{align:'center'})
+        y += 5
 
-      // Calcula o espaço disponível até o texto legal.
-      // Se houver muito conteúdo, compacta apenas esta área.
-      const limiteParticipacoes = 198
-      const alturaNormal =
-        5 + participacaoAutoral.length * 3.4 + 7 +
-        5 + participacaoPatrimonial.length * 3.4
+        doc.setFont('times','italic')
+        doc.setFontSize(7.6)
+        doc.text(
+          'O quadro completo de autores, titulares e percentuais integra a página 2 deste certificado.',
+          105,y,{align:'center', maxWidth:170}
+        )
+      } else {
+        doc.setFont('times','bold')
+        doc.setFontSize(9)
+        doc.text('Participação Autoral',105,y,{align:'center'})
+        y += 5
 
-      let fontePart = 7.6
-      let passoPart = 3.15
-      const disponivel = limiteParticipacoes - y
+        doc.setFont('times','normal')
+        doc.setFontSize(7.8)
+        const pa = doc.splitTextToSize(participacaoTexto(data.participacao_autoral),150)
+        doc.text(pa,105,y,{align:'center'})
+        y += pa.length * 3.2 + 6
 
-      if (alturaNormal > disponivel) {
-        fontePart = 6.4
-        passoPart = 2.65
+        doc.setFont('times','bold')
+        doc.setFontSize(9)
+        doc.text('Participação Patrimonial',105,y,{align:'center'})
+        y += 5
+
+        doc.setFont('times','normal')
+        doc.setFontSize(7.8)
+        const pp = doc.splitTextToSize(participacaoTexto(data.participacao_patrimonial),150)
+        doc.text(pp,105,y,{align:'center'})
       }
-      if ((5 + participacaoAutoral.length * passoPart + 7 +
-           5 + participacaoPatrimonial.length * passoPart) > disponivel) {
-        fontePart = 5.6
-        passoPart = 2.25
-      }
-
-      doc.setFont('times','bold')
-      doc.setFontSize(8.5)
-      doc.text('Participação Autoral',105,y,{align:'center'})
-      y += 4.5
-
-      doc.setFont('times','normal')
-      doc.setFontSize(fontePart)
-      doc.text(participacaoAutoral,105,y,{align:'center'})
-      y += participacaoAutoral.length * passoPart + 5
-
-      doc.setFont('times','bold')
-      doc.setFontSize(8.5)
-      doc.text('Participação Patrimonial',105,y,{align:'center'})
-      y += 4.5
-
-      doc.setFont('times','normal')
-      doc.setFontSize(fontePart)
-      doc.text(participacaoPatrimonial,105,y,{align:'center'})
 
       // Texto legal
       const textoLegal1 =
@@ -372,6 +364,66 @@
       doc.setTextColor(grafite[0],grafite[1],grafite[2])
       doc.text('Registro Autoral Digital • Uma empresa Atual Records',105,270,{align:'center'})
       doc.text('CNPJ: 33.705.089/0001-40',105,273,{align:'center'})
+
+      if (muitosAutores) {
+        doc.addPage()
+
+        doc.setFillColor(creme[0],creme[1],creme[2])
+        doc.rect(0,0,210,297,'F')
+        doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+        doc.setLineWidth(1.2)
+        doc.rect(10,10,190,277)
+
+        doc.setTextColor(grafite[0],grafite[1],grafite[2])
+        doc.setFont('times','bold')
+        doc.setFontSize(17)
+        doc.text('Quadro de Autores e Participações',105,25,{align:'center'})
+
+        doc.setFont('times','normal')
+        doc.setFontSize(8)
+        doc.text(`Certificado Nº ${data.protocolo || '-'}`,105,32,{align:'center'})
+        doc.text(`Obra: ${textoSeguro(data.titulo)}`,105,38,{align:'center', maxWidth:174})
+
+        let y2 = 49
+
+        function blocoPagina2(titulo, conteudo){
+          doc.setFont('times','bold')
+          doc.setFontSize(10)
+          doc.text(titulo,18,y2)
+          y2 += 5
+
+          doc.setFont('times','normal')
+          doc.setFontSize(7.5)
+          const linhas = doc.splitTextToSize(textoSeguro(conteudo),174)
+
+          for(const linha of linhas){
+            if(y2 > 270){
+              doc.addPage()
+              doc.setFillColor(creme[0],creme[1],creme[2])
+              doc.rect(0,0,210,297,'F')
+              doc.setDrawColor(douradoEscuro[0],douradoEscuro[1],douradoEscuro[2])
+              doc.rect(10,10,190,277)
+              y2 = 22
+            }
+            doc.text(linha,18,y2)
+            y2 += 3.5
+          }
+          y2 += 6
+        }
+
+        blocoPagina2('Autores', autoresCertificado)
+        blocoPagina2('CPF(s)', textoSeguro(data.cpf))
+        blocoPagina2('Titular(es)', textoSeguro(data.titular, data.nome || '-'))
+        blocoPagina2('Participação Autoral', participacaoTexto(data.participacao_autoral))
+        blocoPagina2('Participação Patrimonial', participacaoTexto(data.participacao_patrimonial))
+
+        doc.setFont('times','italic')
+        doc.setFontSize(7)
+        doc.text(
+          'Este quadro é parte integrante do Certificado de Registro Autoral Digital acima identificado.',
+          105,282,{align:'center', maxWidth:174}
+        )
+      }
 
       doc.save(`certificado-${data.protocolo}.pdf`)
     }
